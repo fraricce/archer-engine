@@ -1,54 +1,89 @@
 "use strict";
 var inquirer = require("inquirer");
 console.log("Hello welcome to your adventure");
-var directionsPrompt = {
+
+
+function main(pos) {
+  console.log('You find youself in a small room, there is a door in front of you.');
+  runScene(pos);
+}
+
+let direction = {
   type: 'list',
-  name: 'direction',
+  name: 'directions',
   message: 'Which direction would you like to go?',
-  choices: ['Forward', 'Right', 'Left', 'Back', 'Quit']
+  choices: ['North','Right','South','Left','Quit']
 };
 
-function main(index) {
-  console.log('You find youself in a small room, there is a door in front of you.');
-  runScene(index);
+
+var map = {
+  cols: 2,
+  rows: 2,
+  tsize: 4,
+  tiles: [
+    {
+      title:'Room Start',
+      questions: direction
+    },
+    {
+      title:'Room Right',
+      questions: direction
+    },
+    {
+      title:'Room South',
+      questions: direction
+    },
+    {
+      title:'Room',
+      questions: direction
+    } 
+  ],
+  getTile: function(col, row) {
+    return this.tiles[row * map.cols + col]
+  }
+};
+
+//console.log(map.getTile(0,1))
+
+var pos = {x:0,y:0};
+
+function getQuestions(x,y) {
+  return map.getTile(x, y).questions;
 }
 
-let world = [{
-  type: 'list',
-  name: 'direction',
-  message: 'Which direction would you like to go?',
-  choices: ['Right', 'Quit']
-}, {
-  type: 'list',
-  name: 'direction2',
-  message: 'Which direction would you like to look go?',
-  choices: ['Left', 'Quit']
-}];
-
-var index = 0;
-
-function getQuestions(x) {
-  return world[x];
-}
-
-function runScene(x) {
-  let questions = getQuestions(x);
+function runScene(pos) {
+  let questions = getQuestions(pos.x, pos.y);
+  console.log('You are in '+map.getTile(pos.x, pos.y).title);
   inquirer.prompt(questions).then(answers => {
-    if (answers.direction === 'Right') {
+    if (answers.directions === 'Right') {
       console.log('Go right');
-      runScene(++index);
+      pos.x = pos.x+1; 
+      runScene(pos);
     }
 
-    if (answers.direction2 === 'Left') {
+    if (answers.directions === 'Left') {
       console.log('Go left');
-      runScene(--index);
+      pos.x = pos.x-1;
+      runScene(pos);
+    }
+
+    if (answers.directions === 'South') {
+      console.log('Go south');
+      pos.y = pos.y+1;
+      runScene(pos);
+    }
+
+    if (answers.directions === 'North') {
+      console.log('Go north');
+      pos.y = pos.y-1;
+      runScene(pos);
     }
     
-    if (answers.direction === 'Quit') {
+    if (answers.directions === 'Quit') {
       console.log('Bye');
       return;
     }
   });
 }
 
-main(index);
+main(pos);
