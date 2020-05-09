@@ -15,35 +15,34 @@ let direction = {
   choices: ['North','Right','South','Left','Quit']
 };
 
+class Room {
+
+  constructor(title, questions) {
+    this.title = title;
+    this.text = '';
+    this.questions = questions;
+  }
+}
+
+let roomNorthWest = new Room('You are in the wood', direction);
+let roomNorthEast = new Room('You are on the north-east side of the forest', direction);
+let roomSouthWest = new Room('You are south-west in the heart the forest', direction);
+let roomSouthEast = new Room('You are south-east of the forest', direction);
 
 var map = {
   cols: 2,
   rows: 2,
   tsize: 4,
   tiles: [
-    {
-      title:'Room Start',
-      questions: direction
-    },
-    {
-      title:'Room Right',
-      questions: direction
-    },
-    {
-      title:'Room South',
-      questions: direction
-    },
-    {
-      title:'Room',
-      questions: direction
-    } 
+    roomNorthWest,
+    roomNorthEast,
+    roomSouthWest,
+    roomSouthEast
   ],
   getTile: function(col, row) {
     return this.tiles[row * map.cols + col]
   }
 };
-
-//console.log(map.getTile(0,1))
 
 var pos = {x:0,y:0};
 
@@ -53,7 +52,7 @@ function getQuestions(x,y) {
 
 function runScene(pos) {
   let questions = getQuestions(pos.x, pos.y);
-  console.log('You are in '+map.getTile(pos.x, pos.y).title);
+  console.log(map.getTile(pos.x, pos.y).title);
   inquirer.prompt(questions).then(answers => {
     if (answers.directions === 'Right') {
       console.log('Go right');
