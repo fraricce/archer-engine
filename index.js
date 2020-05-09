@@ -1,7 +1,12 @@
 "use strict";
 var inquirer = require("inquirer");
-console.log("Hello welcome to your adventure");
+const chalk = require('chalk');
 
+console.log(chalk.redBright("Archer Engine - CLI Adventure kit!"));
+
+const chalkAnimation = require('chalk-animation');
+
+chalkAnimation.glitch('Lorem ipsum dolor sit amet');
 
 function main(pos) {
   runScene(pos);
