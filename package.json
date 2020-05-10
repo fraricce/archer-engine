@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "chalk": "^4.0.0",
-    "inquirer": "^7.1.0"
+    "node-blessed": "^0.3.2",
+    "terminal-kit": "^1.35.2"
   }
 }

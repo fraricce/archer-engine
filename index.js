@@ -1,23 +1,25 @@
 "use strict";
-var inquirer = require("inquirer");
-const chalk = require('chalk');
 
-console.log(chalk.redBright("Archer Engine - CLI Adventure kit!"));
-
-const chalkAnimation = require('chalk-animation');
-
-chalkAnimation.glitch('Lorem ipsum dolor sit amet');
+var term = require( 'terminal-kit' ).terminal ;
+term.cyan('Welcome to Archer Engine: Build Your Own Text Adventure. \n' ) ;
 
 function main(pos) {
   runScene(pos);
 }
 
-let direction = {
-  type: 'list',
-  name: 'directions',
-  message: 'Which direction would you like to go?',
-  choices: ['North','Right','South','Left','Quit']
-};
+let directions = [
+	'North' ,
+	'East' ,
+  'South',
+  'West'
+];
+
+let basic = [
+  'Inventory',
+  'Look',
+  'Help',
+  'Quit'
+]
 
 let longBow = { name:'An english longbow', strength:5, skill:'archer' };
 let mushrooms = { name:'Some mushrooms', energy:2 };
@@ -37,10 +39,11 @@ class Room {
   }
 }
 
-let roomNorthWest = new Room('You are in the wood', direction);
-let roomNorthEast = new Room('You are on the north-east side of the forest', direction);
-let roomSouthWest = new Room('You are south-west in the heart the forest', direction);
-let roomSouthEast = new Room('You are south-east of the forest', direction);
+
+let roomNorthWest = new Room('You are in the wood', directions.concat(basic));
+let roomNorthEast = new Room('You are on the north-east side of the forest', directions.concat(basic));
+let roomSouthWest = new Room('You are south-west in the heart the forest', directions.concat(basic));
+let roomSouthEast = new Room('You are south-east of the forest', directions.concat(['Pick']).concat(basic));
 roomSouthEast.items = items;
 
 var map = {
@@ -66,66 +69,123 @@ function getQuestions(x,y) {
   return map.getTile(x, y).questions;
 }
 
-function runScene(pos) {
+let feedback = '';
+let showInventory = false;
 
-  console.log(pos.x + ' ' + pos.y)
+function runScene(pos) {
   
+  term.clear();
+  term.red(pos.x + ' ' + pos.y)
+  term(feedback+'\n');
+  feedback = '';
   let room = map.getTile(pos.x, pos.y);
   let questions = room.questions;
-  console.log('________________'+room.title+'________________');
+  term.green(room.title+'\n');
 
-  if (room.items.length > 0) {
-    console.log('There are ');
-    room.items.forEach(k=>{
-      console.log(k.name);
-    });
+  if (showInventory) {
+    if (room.items.length > 0) {
+      term.yellow('There is something here:'+'\n');
+      room.items.forEach(k=>{
+        term.yellow(k.name+'\n');
+      });
+    } else {
+      term.yellow('Nothing to see.'+'\n');
+    }
+    showInventory = false;
   }
 
+  term.singleColumnMenu(questions, function( error , response ) {
+    term('\n').eraseLineAfter.green(
+      "#%s <(%s,%s)\n" ,
+      response.selectedText ,
+      response.x ,
+      response.y
+    );
 
-  inquirer.prompt(questions).then(answers => {
-    if (answers.directions === 'Right') {
-      if (map.getTile(pos.x+1, pos.y) === undefined) {
-        console.log('Cannot go that way');
+    let res = response.selectedText;
+
+    if (res === 'Look') {
+      showInventory = true;
+    }
+
+    if (res === 'North') {
+      if (map.getTile(pos.x, pos.y-1) === undefined) {
+        feedback = 'Cannot go that way';
       } else {
-        console.log('Go right');
+        feedback = 'Go North';
+        pos.y = pos.y-1;
+      }
+    }
+
+    if (res === 'East') {
+      if (map.getTile(pos.x+1, pos.y) === undefined) {
+        feedback = 'Cannot go that way';
+      } else {
+        feedback = 'Go East';
         pos.x = pos.x+1;
       }
     }
 
-    if (answers.directions === 'Left') {
-      if (map.getTile(pos.x-1, pos.y) === undefined) {
-        console.log('Cannot go that way');
-      } else {
-        console.log('Go left');
-        pos.x = pos.x-1;
-      }
-    }
-
-    if (answers.directions === 'South') {
+    if (res === 'South') {
       if (map.getTile(pos.x, pos.y+1) === undefined) {
-        console.log('Cannot go that way');
+        feedback = 'Cannot go that way';
       } else {
-        console.log('Go south');
+        feedback = 'Go South';
         pos.y = pos.y+1;
       }
     }
 
-    if (answers.directions === 'North') {
-      if (map.getTile(pos.x, pos.y-1) === undefined) {
-        console.log('Cannot go that way');
+    if (res === 'West') {
+      if (map.getTile(pos.x-1, pos.y) === undefined) {
+        feedback = 'Cannot go that way';
       } else {
-        console.log('Go north');
-        pos.y = pos.y-1;
+        feedback = 'Go West';
+        pos.x = pos.x-1;
       }
     }
     
-    if (answers.directions === 'Quit') {
+    if (res === 'Quit') {
       console.log('Bye');
-      return;
+      process.exit() ;  
     }
 
     runScene(pos);
+    
+  } ) ;
+  
+
+}
+
+function renderRoomText(screen) {
+  screen.title = 'my window title';
+   
+  // Create a box perfectly centered horizontally and vertically.
+  var box = blessed.box({
+    top: '0',
+    left: 'center',
+    width: 70,
+    height: 15,
+    content: 'Hello {bold}world{/bold}!',
+    tags: true,
+    border: {
+      type: 'line'
+    },
+    style: {
+      fg: 'white',
+      bg: 'magenta',
+      border: {
+        fg: '#f0f0f0'
+      },
+      hover: {
+        bg: 'green'
+      }
+    }
   });
+   
+  // Append our box to the screen.
+  screen.append(box);
+  screen.render();
+  return box;
 }
 
 main(pos);
