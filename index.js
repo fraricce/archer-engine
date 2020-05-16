@@ -52,6 +52,13 @@ var map = {
   },
 };
 
+
+var  player = {
+    pos : { x: 0, y: 0 },
+    energy:100,
+    items:[]
+  };
+
 function getQuestions(x, y) {
   return map.getTile(x, y).questions;
 }
@@ -60,20 +67,20 @@ var pos = { x: 0, y: 0 };
 let feedback = "";
 let showInventory = false;
 
-const applyDirection = (direction) => {
+const applyDirection = (player, direction) => {
   let testTile = undefined;
   switch (direction) {
     case "North":
-      testTile = map.getTile(pos.x, pos.y - 1);
+      testTile = map.getTile(player.pos.x, player.pos.y - 1);
       break;
     case "East":
-      testTile = map.getTile(pos.x + 1, pos.y);
+      testTile = map.getTile(player.pos.x + 1, player.pos.y);
       break;
     case "South":
-      testTile = map.getTile(pos.x, pos.y + 1);
+      testTile = map.getTile(player.pos.x, player.pos.y + 1);
       break;
     case "West":
-      testTile = map.getTile(pos.x - 1, pos.y);
+      testTile = map.getTile(player.pos.x - 1, player.pos.y);
       break;
   }
   if (!testTile) {
@@ -82,16 +89,16 @@ const applyDirection = (direction) => {
     feedback = "Go " + direction;
     switch (direction) {
       case "North":
-        pos.y = pos.y - 1;
+        player.pos.y = player.pos.y - 1;
         break;
       case "East":
-        pos.x = pos.x + 1;
+        player.pos.x = player.pos.x + 1;
         break;
       case "South":
-        pos.y = pos.y + 1;
+        player.pos.y = player.pos.y + 1;
         break;
       case "West":
-        pos.x = pos.x - 1;
+        player.pos.x = player.pos.x - 1;
         break;
     } 
   }
@@ -99,10 +106,10 @@ const applyDirection = (direction) => {
 
 function runScene(pos) {
   term.clear();
-  term.red(pos.x + " " + pos.y);
+  term.red(player.pos.x + " " + player.pos.y);
   term(feedback + "\n");
   feedback = "";
-  let room = map.getTile(pos.x, pos.y);
+  let room = map.getTile(player.pos.x, player.pos.y);
   let questions = room.questions;
   term.green(room.title + "\n");
 
@@ -133,19 +140,19 @@ function runScene(pos) {
     }
 
     if (res === "North") {
-      applyDirection("North");
+      applyDirection(player, "North");
     }
 
     if (res === "East") {
-      applyDirection("East");
+      applyDirection(player, "East");
     }
 
     if (res === "South") {
-      applyDirection("South");
+      applyDirection(player, "South");
     }
 
     if (res === "West") {
-      applyDirection("West");
+      applyDirection(player, "West");
     }
 
     if (res === "Quit") {
