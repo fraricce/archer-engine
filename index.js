@@ -4,8 +4,8 @@ console.log(applyDirection);
 var term = require("terminal-kit").terminal;
 term.cyan("Welcome to Archer Engine: Build Your Own Text Adventure. \n");
 
-function main(pos) {
-  runScene(pos);
+function main(player) {
+  runScene(player.pos);
 }
 
 let directions = ["North", "East", "South", "West"];
@@ -54,24 +54,18 @@ var map = {
 };
 
 var player = {
-    pos : { x: 0, y: 0 },
-    energy:100,
-    items:[],
-    feedback:''
-  };
+  pos: { x: 0, y: 0 },
+  energy: 100,
+  items: [],
+  feedback: "",
+};
 
-function getQuestions(x, y) {
-  return map.getTile(x, y).questions;
-}
-
-var pos = { x: 0, y: 0 };
-let feedback = "";
 let showInventory = false;
 
 function runScene(pos) {
   term.clear();
   term.red(player.pos.x + " " + player.pos.y);
-  term("\n"+player.feedback + "\n");
+  term("\n" + player.feedback + "\n");
   player.feedback = "";
   let room = map.getTile(player.pos.x, player.pos.y);
   let questions = room.questions;
@@ -124,7 +118,7 @@ function runScene(pos) {
       process.exit();
     }
 
-    runScene(pos);
+    runScene(player.pos);
   });
 }
 
@@ -160,4 +154,4 @@ function renderRoomText(screen) {
   return box;
 }
 
-main(pos);
+main(player);
