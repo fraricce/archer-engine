@@ -1,18 +1,24 @@
 "use strict";
 var applyDirection = require("./movement.js");
-console.log(applyDirection);
 var term = require("terminal-kit").terminal;
-term.cyan("Welcome to Archer Engine: Build Your Own Text Adventure. \n");
+let showItems = false;
+let updateItems = [];
+let showInventory = false;
+let enableDebug = false;
 
 function main(player) {
+  process.argv.forEach(function (val, index, array) {
+    if (val === '-debug') {
+      enableDebug = true;
+    }
+  });  
   runScene(player.pos);
 }
 
 let directions = ["North", "East", "South", "West"];
-let basic = ["Inventory", "Look", "Help", "Quit"];
+let basic = ["Inventory", "Look", "Quit"];
 let longBow = { name: "An english longbow", strength: 5, skill: "archer", category:"weapon" };
 let mushrooms = { name: "Some mushrooms", energy: 2, category:"food" };
-
 let items = [longBow, mushrooms];
 
 class Room {
@@ -58,10 +64,6 @@ var player = {
   feedback: "",
 };
 
-let showItems = false;
-let updateItems = [];
-let showInventory = false;
-
 const updateRoomObjects = (res, command, room, player) => {
   const item = res.substr(command.length).trim();
   const pickedItem = room.items.find(j=>j.name === item);
@@ -97,8 +99,8 @@ const toLower = (word) => {
 }
 
 function runScene(pos) {
-  term.clear();
-  term.red(player.pos.x + " " + player.pos.y);
+  if (!enableDebug) term.clear();
+  if (enableDebug) term.red(player.pos.x + " " + player.pos.y);
   term("\n" + player.feedback + "\n");
   player.feedback = "";
   let room = map.getTile(player.pos.x, player.pos.y);
@@ -139,13 +141,6 @@ function runScene(pos) {
   }
 
   term.singleColumnMenu(commands, function (error, response) {
-    term("\n").eraseLineAfter.green(
-      "#%s <(%s,%s)\n",
-      response.selectedText,
-      response.x,
-      response.y
-    );
-
     let res = response.selectedText;
 
     if (res.indexOf("Pick")>=0) {
