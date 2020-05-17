@@ -147,7 +147,11 @@ function runScene(pos) {
     showItems = false;
   }
 
-  term.singleColumnMenu(commands, function (error, response) {
+  getInput(room, player);
+}
+
+const getInput = (room, player) => {
+  term.singleColumnMenu(room.commands, function (error, response) {
     let res = response.selectedText;
 
     if (res.indexOf("Pick") >= 0) {
@@ -192,7 +196,7 @@ function runScene(pos) {
     }
 
     runScene(player.pos);
-  });
+  }); 
 }
 
 function renderRoomText(screen) {
