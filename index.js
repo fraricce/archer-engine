@@ -62,6 +62,40 @@ let showItems = false;
 let updateItems = [];
 let showInventory = false;
 
+const updateRoomObjects = (res, command, room, player) => {
+  const item = res.substr(command.length).trim();
+  const pickedItem = room.items.find(j=>j.name === item);
+  room.items = room.items.filter(k=>k.name !== item);
+  room.commands = room.commands.filter(k => k !== command + " " + item);
+  return pickedItem;
+}
+
+const updatePlayerAfterPick = (player, pickedItem) => {
+  player.items.push(pickedItem);
+  player.feedback = "You have now " + pickedItem.name + ".";
+}
+
+const updatePlayerAfterEat = (player, pickedItem) => {
+  player.feedback = "You eat " + pickedItem.name + " but with no appetite at all.";
+      
+  if (player.energy < 100 && pickedItem.energy > 0) {
+    const tryVal = 100 - (player.energy + pickedItem.energy);
+    player.energy+=tryVal;
+    player.feedback = "Such a tasteful food. You feel recharged.";
+  }
+
+  if (pickedItem.energy < 0) {
+    player.energy-=pickedItem.energy;
+    if (Math.abs(pickedItem.energy) > 10) {
+      player.feedback = "Food was poisoned. Your head is heavy, and you feel nausea.";
+    }
+  }  
+}
+
+const toLower = (word) => {
+  return word[0].toLowerCase() + word.substr(1);
+}
+
 function runScene(pos) {
   term.clear();
   term.red(player.pos.x + " " + player.pos.y);
@@ -72,7 +106,15 @@ function runScene(pos) {
   term.green(room.title + "\n");
 
   if (showInventory) {
-    if (player.items)
+    if (player.items.length > 0) {
+      term.yellow("You have ");
+      let i=0;
+      player.items.forEach(y=>{
+        term.yellow(toLower(y.name));
+      });
+    } else {
+      term.yellow("You have nothing." + "\n");
+    }
     showInventory = false;
   }
 
@@ -107,33 +149,13 @@ function runScene(pos) {
     let res = response.selectedText;
 
     if (res.indexOf("Pick")>=0) {
-      const item = res.substr(4).trim();
-      const pickedItem = room.items.find(j=>j.name === item);
-      player.items.push(pickedItem);
-      room.items = room.items.filter(k=>k.name !== item);
-      room.commands = room.commands.filter(k => k !== "Pick "+item);
-      player.feedback = "You have now " + item + ".";
+      updatePlayerAfterPick(player, 
+        updateRoomObjects(res, "Pick", room, player));
     }
 
     if (res.indexOf("Eat")>=0) {
-      const item = res.substr(3).trim();
-      console.log(item);
-      const pickedItem = room.items.find(j=>j.name === item);
-      room.items = room.items.filter(k=>k.name !== item);
-      room.commands = room.commands.filter(k => k !== "Eat "+item);
-      player.feedback = "You eaten " + item + " but with no appetite at all.";
-      if (player.energy < 100 && pickedItem.energy > 0) {
-        const tryVal = 100 - (player.energy + pickedItem.energy);
-        player.energy+=tryVal;
-        player.feedback = "Such a tasteful food. You feel recharged.";
-      }
-
-      if (pickedItem.energy < 0) {
-        player.energy-=pickedItem.energy;
-        if (Math.abs(pickedItem.energy) > 10) {
-          player.feedback = "Food was poisoned. Your head is heavy, and you feel nausea.";
-        }
-      }
+      updatePlayerAfterEat(player,
+        updateRoomObjects(res, "Eat", room));
     }
 
     if (res === "Look") {
