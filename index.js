@@ -1,6 +1,11 @@
 "use strict";
 var applyDirection = require("./movement.js");
 var term = require("terminal-kit").terminal;
+const EventEmitter = require('events');
+
+class MainEmitter extends EventEmitter{};
+const mainEmitter = new MainEmitter();
+
 let showItems = false;
 let showInventory = false;
 let enableDebug = false;
@@ -11,6 +16,9 @@ function main(player) {
       enableDebug = true;
     }
   });
+  mainEmitter.on('acquireInput', (room, player) => {
+    getInput(room, player);
+  })
   runScene(player.pos);
 }
 
@@ -147,7 +155,7 @@ function runScene(pos) {
     showItems = false;
   }
 
-  getInput(room, player);
+  mainEmitter.emit('acquireInput', room, player);
 }
 
 const getInput = (room, player) => {
