@@ -9,19 +9,17 @@ function main(player) {
 }
 
 let directions = ["North", "East", "South", "West"];
-
 let basic = ["Inventory", "Look", "Help", "Quit"];
-
-let longBow = { name: "An english longbow", strength: 5, skill: "archer" };
-let mushrooms = { name: "Some mushrooms", energy: 2 };
+let longBow = { name: "An english longbow", strength: 5, skill: "archer", category:"weapon" };
+let mushrooms = { name: "Some mushrooms", energy: 2, category:"food" };
 
 let items = [longBow, mushrooms];
 
 class Room {
-  constructor(title, questions) {
+  constructor(title, commands) {
     this.title = title;
     this.text = "";
-    this.questions = questions;
+    this.commands = commands;
     this.items = [];
   }
 }
@@ -37,7 +35,7 @@ let roomSouthWest = new Room(
 );
 let roomSouthEast = new Room(
   "You are south-east of the forest",
-  directions.concat(["Pick"]).concat(basic)
+  directions.concat(basic)
 );
 roomSouthEast.items = items;
 
@@ -60,6 +58,8 @@ var player = {
   feedback: "",
 };
 
+let showItems = false;
+let updateItems = [];
 let showInventory = false;
 
 function runScene(pos) {
@@ -68,22 +68,35 @@ function runScene(pos) {
   term("\n" + player.feedback + "\n");
   player.feedback = "";
   let room = map.getTile(player.pos.x, player.pos.y);
-  let questions = room.questions;
+  let commands = room.commands;
   term.green(room.title + "\n");
 
   if (showInventory) {
+    if (player.items)
+    showInventory = false;
+  }
+
+  if (showItems) {
     if (room.items.length > 0) {
       term.yellow("There is something here:" + "\n");
       room.items.forEach((k) => {
+        let verb = "Pick";
+          if (k.category === "food") {
+            verb = "Eat";
+          }
+        let newItem = verb + " " + k.name;
+        if (room.commands.indexOf(newItem)<0) {
+          room.commands.push(verb + " " + k.name);
+        }
         term.yellow(k.name + "\n");
       });
     } else {
       term.yellow("Nothing special." + "\n");
     }
-    showInventory = false;
+    showItems = false;
   }
 
-  term.singleColumnMenu(questions, function (error, response) {
+  term.singleColumnMenu(commands, function (error, response) {
     term("\n").eraseLineAfter.green(
       "#%s <(%s,%s)\n",
       response.selectedText,
@@ -93,7 +106,41 @@ function runScene(pos) {
 
     let res = response.selectedText;
 
+    if (res.indexOf("Pick")>=0) {
+      const item = res.substr(4).trim();
+      const pickedItem = room.items.find(j=>j.name === item);
+      player.items.push(pickedItem);
+      room.items = room.items.filter(k=>k.name !== item);
+      room.commands = room.commands.filter(k => k !== "Pick "+item);
+      player.feedback = "You have now " + item + ".";
+    }
+
+    if (res.indexOf("Eat")>=0) {
+      const item = res.substr(3).trim();
+      console.log(item);
+      const pickedItem = room.items.find(j=>j.name === item);
+      room.items = room.items.filter(k=>k.name !== item);
+      room.commands = room.commands.filter(k => k !== "Eat "+item);
+      player.feedback = "You eaten " + item + " but with no appetite at all.";
+      if (player.energy < 100 && pickedItem.energy > 0) {
+        const tryVal = 100 - (player.energy + pickedItem.energy);
+        player.energy+=tryVal;
+        player.feedback = "Such a tasteful food. You feel recharged.";
+      }
+
+      if (pickedItem.energy < 0) {
+        player.energy-=pickedItem.energy;
+        if (Math.abs(pickedItem.energy) > 10) {
+          player.feedback = "Food was poisoned. Your head is heavy, and you feel nausea.";
+        }
+      }
+    }
+
     if (res === "Look") {
+      showItems = true;
+    }
+
+    if (res === "Inventory") {
       showInventory = true;
     }
 
