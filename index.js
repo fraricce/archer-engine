@@ -2,23 +2,27 @@
 var applyDirection = require("./movement.js");
 var term = require("terminal-kit").terminal;
 let showItems = false;
-let updateItems = [];
 let showInventory = false;
 let enableDebug = false;
 
 function main(player) {
   process.argv.forEach(function (val, index, array) {
-    if (val === '-debug') {
+    if (val === "-debug") {
       enableDebug = true;
     }
-  });  
+  });
   runScene(player.pos);
 }
 
 let directions = ["North", "East", "South", "West"];
 let basic = ["Inventory", "Look", "Quit"];
-let longBow = { name: "An english longbow", strength: 5, skill: "archer", category:"weapon" };
-let mushrooms = { name: "Some mushrooms", energy: 2, category:"food" };
+let longBow = {
+  name: "An english longbow",
+  strength: 5,
+  skill: "archer",
+  category: "weapon",
+};
+let mushrooms = { name: "Some mushrooms", energy: 2, category: "food" };
 let items = [longBow, mushrooms];
 
 class Room {
@@ -66,37 +70,39 @@ var player = {
 
 const updateRoomObjects = (res, command, room, player) => {
   const item = res.substr(command.length).trim();
-  const pickedItem = room.items.find(j=>j.name === item);
-  room.items = room.items.filter(k=>k.name !== item);
-  room.commands = room.commands.filter(k => k !== command + " " + item);
+  const pickedItem = room.items.find((j) => j.name === item);
+  room.items = room.items.filter((k) => k.name !== item);
+  room.commands = room.commands.filter((k) => k !== command + " " + item);
   return pickedItem;
-}
+};
 
 const updatePlayerAfterPick = (player, pickedItem) => {
   player.items.push(pickedItem);
   player.feedback = "You have now " + pickedItem.name + ".";
-}
+};
 
 const updatePlayerAfterEat = (player, pickedItem) => {
-  player.feedback = "You eat " + pickedItem.name + " but with no appetite at all.";
-      
+  player.feedback =
+    "You eat " + pickedItem.name + " but with no appetite at all.";
+
   if (player.energy < 100 && pickedItem.energy > 0) {
     const tryVal = 100 - (player.energy + pickedItem.energy);
-    player.energy+=tryVal;
+    player.energy += tryVal;
     player.feedback = "Such a tasteful food. You feel recharged.";
   }
 
   if (pickedItem.energy < 0) {
-    player.energy-=pickedItem.energy;
+    player.energy -= pickedItem.energy;
     if (Math.abs(pickedItem.energy) > 10) {
-      player.feedback = "Food was poisoned. Your head is heavy, and you feel nausea.";
+      player.feedback =
+        "Food was poisoned. Your head is heavy, and you feel nausea.";
     }
-  }  
-}
+  }
+};
 
 const toLower = (word) => {
   return word[0].toLowerCase() + word.substr(1);
-}
+};
 
 function runScene(pos) {
   if (!enableDebug) term.clear();
@@ -110,8 +116,8 @@ function runScene(pos) {
   if (showInventory) {
     if (player.items.length > 0) {
       term.yellow("You have ");
-      let i=0;
-      player.items.forEach(y=>{
+      let i = 0;
+      player.items.forEach((y) => {
         term.yellow(toLower(y.name));
       });
     } else {
@@ -123,14 +129,15 @@ function runScene(pos) {
   if (showItems) {
     if (room.items.length > 0) {
       term.yellow("There is something here:" + "\n");
+      let quitIdx = room.commands.findIndex(y => y === 'Quit');
       room.items.forEach((k) => {
         let verb = "Pick";
-          if (k.category === "food") {
-            verb = "Eat";
-          }
+        if (k.category === "food") {
+          verb = "Eat";
+        }
         let newItem = verb + " " + k.name;
-        if (room.commands.indexOf(newItem)<0) {
-          room.commands.push(verb + " " + k.name);
+        if (room.commands.indexOf(newItem) < 0) {
+          room.commands.splice(quitIdx++, 0, verb + " " + k.name);
         }
         term.yellow(k.name + "\n");
       });
@@ -143,14 +150,15 @@ function runScene(pos) {
   term.singleColumnMenu(commands, function (error, response) {
     let res = response.selectedText;
 
-    if (res.indexOf("Pick")>=0) {
-      updatePlayerAfterPick(player, 
-        updateRoomObjects(res, "Pick", room, player));
+    if (res.indexOf("Pick") >= 0) {
+      updatePlayerAfterPick(
+        player,
+        updateRoomObjects(res, "Pick", room, player)
+      );
     }
 
-    if (res.indexOf("Eat")>=0) {
-      updatePlayerAfterEat(player,
-        updateRoomObjects(res, "Eat", room));
+    if (res.indexOf("Eat") >= 0) {
+      updatePlayerAfterEat(player, updateRoomObjects(res, "Eat", room));
     }
 
     if (res === "Look") {
@@ -178,7 +186,8 @@ function runScene(pos) {
     }
 
     if (res === "Quit") {
-      console.log("Bye");
+      term.clear();
+      term.yellow("Thank you for playing this old style adventure.\nThis game has been built with Archer Engine by Francesco Ricceri");
       process.exit();
     }
 
