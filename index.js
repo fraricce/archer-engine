@@ -11,11 +11,7 @@ let showInventory = false;
 let enableDebug = false;
 
 function main(player) {
-  process.argv.forEach(function (val, index, array) {
-    if (val === "-debug") {
-      enableDebug = true;
-    }
-  });
+  enableDebug = process.argv.findIndex(i=>i==='-debug') >= 0;
   mainEmitter.on('acquireInput', (room, player) => {
     getInput(room, player);
   })
@@ -117,9 +113,11 @@ function runScene(pos) {
   if (enableDebug) term.red(player.pos.x + " " + player.pos.y);
   term("\n" + player.feedback + "\n");
   player.feedback = "";
+  term.cyan("Energy");
+  term.bar(1, {barStyle:term.green});
   let room = map.getTile(player.pos.x, player.pos.y);
   let commands = room.commands;
-  term.green(room.title + "\n");
+  term.green("\n\n" + room.title + "\n");
 
   if (showInventory) {
     if (player.items.length > 0) {
@@ -198,8 +196,9 @@ const getInput = (room, player) => {
     }
 
     if (res === "Quit") {
-      term.clear();
-      term.yellow("Thank you for playing this old style adventure.\nThis game has been built with Archer Engine by Francesco Ricceri");
+      if (!enableDebug) term.clear();
+      term.yellow("Thank you for playing this old style adventure.\nThis game has been built with Archer Engine ");
+      term.cyan.bold("by Francesco Ricceri");
       process.exit();
     }
 
