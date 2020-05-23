@@ -1,6 +1,9 @@
 "use strict";
 var applyDirection = require("./movement.js");
 var term = require("terminal-kit").terminal;
+
+const { Player, Room, Creature, Task, TaskCondition, ConditionType } = require ("./world.js");
+
 const EventEmitter = require("events");
 class MainEmitter extends EventEmitter {}
 const mainEmitter = new MainEmitter();
@@ -27,50 +30,6 @@ let longBow = {
 };
 let mushrooms = { name: "Some mushrooms", energy: 2, category: "food" };
 let items = [longBow, mushrooms];
-
-const ConditionType = {
-  1: "Visit",
-  2: "Pick"
-}
-
-class TaskCondition {
-  constructor(id, condType) {
-    this.id = id;
-    this.condType = condType;
-    this.value = {}; // can be x,y for visit || string for pick
-  }
-}
-
-class Task {
-  constructor(title, description) {
-    this.title = title;
-    this.description = description;
-    this.read = false;
-    this.completed = false;
-    this.point = 20;
-    this.condition = {};
-  }
-}
-
-class Creature {
-  constructor(name, description, dangerous, damage) {
-    this.name = name;
-    this.description = description;
-    this.dangerous = dangerous
-    this.damage = damage;
-  }
-}
-
-class Room {
-  constructor(title, commands) {
-    this.title = title;
-    this.text = "";
-    this.commands = commands;
-    this.items = [];
-    this.creatures = [];
-    this.tasks = []
-  }
-}
 
 const findLongbow = new Task('Pick the Longbow','Suddenly, you hear a voice from the forest.. it says that you must find a longbow.');
 const findLongbowCondition = new TaskCondition(1, ConditionType[2]);
@@ -99,7 +58,7 @@ roomSouthEast.items = items;
 
 var map = {
   title: "Company of Archers",
-  author: "",
+  author: "Francesco Ricceri",
   cols: 2,
   rows: 2,
   tsize: 4,
@@ -111,15 +70,7 @@ var map = {
   },
 };
 
-var player = {
-  pos: { x: 0, y: 0 },
-  energy: 100,
-  items: [],
-  tasks: [],
-  points:0,
-  name:'',
-  feedback: ""
-};
+var player = new Player('Fra', {x:0,y:0 })
 
 const updateRoomObjects = (res, command, room, player) => {
   const item = res.substr(command.length).trim();
@@ -202,13 +153,12 @@ function runScene(pos) {
   term.cyan(`\n\nPoints: ${score}                                 Energy`);
   term.bar(player.energy / 100, { barStyle: term.green });
   checkTask(player);
-  term("\n\n" + player.feedback + "\n");
   
   let room = map.getTile(player.pos.x, player.pos.y);
   let commands = room.commands;
-  term.green("\n" + room.title + "\n");
-
+  term.green("\n\n" + room.title + "\n");
   
+  term("\n" + player.feedback + "\n");
   player.feedback = "";
 
   if (room.tasks.length > 0) {
@@ -259,7 +209,7 @@ function runScene(pos) {
     }
 
     if (room.items.length === 0 && room.creatures.length === 0)
-      term.yellow("Nothing special." + "\n");
+      term.yellow("\nNothing special.\n");
     
       showItems = false;
   }
@@ -284,10 +234,12 @@ const getInput = (room, player) => {
 
     if (res === "Look") {
       showItems = true;
+      player.feedback = 'Look';
     }
 
     if (res === "Inventory") {
       showInventory = true;
+      player.feedback = 'Inventory';
     }
 
     if (res === "North") {
