@@ -28,6 +28,30 @@ let longBow = {
 let mushrooms = { name: "Some mushrooms", energy: 2, category: "food" };
 let items = [longBow, mushrooms];
 
+const ConditionType = {
+  1: "Visit",
+  2: "Pick"
+}
+
+class TaskCondition {
+  constructor(id, condType) {
+    this.id = id;
+    this.condType = condType;
+    this.value = {}; // can be x,y for visit || string for pick
+  }
+}
+
+class Task {
+  constructor(title, description) {
+    this.title = title;
+    this.description = description;
+    this.read = false;
+    this.completed = false;
+    this.point = 20;
+    this.condition = {};
+  }
+}
+
 class Creature {
   constructor(name, description, dangerous, damage) {
     this.name = name;
@@ -44,19 +68,28 @@ class Room {
     this.commands = commands;
     this.items = [];
     this.creatures = [];
+    this.tasks = []
   }
 }
 
+const findLongbow = new Task('Pick the Longbow','Suddenly, you hear a voice from the forest.. it says that you must find a longbow.');
+const findLongbowCondition = new TaskCondition(1, ConditionType[2]);
+findLongbowCondition.value = "An english longbow";
+findLongbow.condition = findLongbowCondition;
+
 let roomNorthWest = new Room("You are in the wood", directions.concat(basic));
+
 let roomNorthEast = new Room(
   "You are on the north-east side of the forest",
   directions.concat(basic)
 );
+roomNorthEast.tasks.push(findLongbow);
+
 let roomSouthWest = new Room(
   "You are south-west in the heart the forest",
   directions.concat(basic)
 );
-let fogrod = new Creature('Fogrod the Orc', 'an orc. He looks angry. He holds a crossbow, aimed at you.', true, 10);
+let fogrod = new Creature('Loic the Orc', 'an orc. He looks angry. He holds a crossbow, aimed at you.', true, 10);
 roomSouthWest.creatures.push(fogrod);
 let roomSouthEast = new Room(
   "You are south-east of the forest",
@@ -82,7 +115,9 @@ var player = {
   pos: { x: 0, y: 0 },
   energy: 100,
   items: [],
-  feedback: "",
+  tasks: [],
+  point:0,
+  feedback: ""
 };
 
 const updateRoomObjects = (res, command, room, player) => {
@@ -121,6 +156,27 @@ const toLower = (word) => {
   return word[0].toLowerCase() + word.substr(1);
 };
 
+const checkTask = (player) => {
+  player.tasks.forEach(j=>{
+    if (!j.completed) { 
+      if (j.condition.condType === "Visit") {
+        if (player.x === j.condition.value.x && player.y === j.condition.value.y) {
+          j.completed = true;
+          player.feedback = 'Great! Task completed ('+j.title+')';
+        }
+      }
+      if (j.condition.condType === "Pick") {
+        player.items.forEach(r=>{
+          if (r.name === j.condition.value) {
+            j.completed = true;
+            player.feedback = 'Great! Task completed ('+j.title+')';
+          }
+        });
+      }
+    }
+  })
+}
+
 function runScene(pos) {
   if (!enableDebug) term.clear();
   if (enableDebug) term.red(player.pos.x + " " + player.pos.y);
@@ -139,17 +195,29 @@ function runScene(pos) {
   term.bgBlack();
   term.yellow("────────────────────────────────────────────────────────────");
   // put post-spaces
-
   
   term.cyan("\n\n                                         Energy");
   term.bar(player.energy / 100, { barStyle: term.green });
-
+  checkTask(player);
   term("\n\n" + player.feedback + "\n");
-  player.feedback = "";
+  
   let room = map.getTile(player.pos.x, player.pos.y);
   let commands = room.commands;
   term.green("\n" + room.title + "\n");
 
+  
+  player.feedback = "";
+
+  if (room.tasks.length > 0) {
+    room.tasks.forEach(h=>{
+      if (!h.read) {
+        term.brightBlue(h.description+"\n");
+        h.read = true;
+        player.tasks.push(h);
+      }
+    });
+  }
+  
   if (showInventory) {
     if (player.items.length > 0) {
       term.yellow("You have ");
