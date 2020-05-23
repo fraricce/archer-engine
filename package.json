@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "blessed": "^0.1.81",
+    "figlet": "^1.4.0",
     "node-blessed": "^0.3.2",
     "terminal-kit": "^1.35.2"
   }

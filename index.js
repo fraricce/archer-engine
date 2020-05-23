@@ -1,9 +1,8 @@
 "use strict";
 var applyDirection = require("./movement.js");
 var term = require("terminal-kit").terminal;
-const EventEmitter = require('events');
-
-class MainEmitter extends EventEmitter{};
+const EventEmitter = require("events");
+class MainEmitter extends EventEmitter {}
 const mainEmitter = new MainEmitter();
 
 let showItems = false;
@@ -11,10 +10,10 @@ let showInventory = false;
 let enableDebug = false;
 
 function main(player) {
-  enableDebug = process.argv.findIndex(i=>i==='-debug') >= 0;
-  mainEmitter.on('acquireInput', (room, player) => {
+  enableDebug = process.argv.findIndex((i) => i === "-debug") >= 0;
+  mainEmitter.on("acquireInput", (room, player) => {
     getInput(room, player);
-  })
+  });
   runScene(player.pos);
 }
 
@@ -54,6 +53,8 @@ let roomSouthEast = new Room(
 roomSouthEast.items = items;
 
 var map = {
+  title: "Company of Archers",
+  author: "",
   cols: 2,
   rows: 2,
   tsize: 4,
@@ -111,13 +112,31 @@ const toLower = (word) => {
 function runScene(pos) {
   if (!enableDebug) term.clear();
   if (enableDebug) term.red(player.pos.x + " " + player.pos.y);
-  term("\n" + player.feedback + "\n");
+  
+  // put pre-spaces
+  map.title;
+  const lTitle = map.title.length;
+  const preSpaces = 30 - (lTitle / 2);
+  let whiteSpaces = '';
+  let j = 0;
+  while(j++<preSpaces) {
+    whiteSpaces += " ";
+  }
+  term.black(whiteSpaces);
+  term.yellow(map.title + "\n");
+  term.bgBlack();
+  term.yellow("────────────────────────────────────────────────────────────");
+  // put post-spaces
+
+  
+  term.cyan("\n\n                                         Energy");
+  term.bar(player.energy / 100, { barStyle: term.green });
+
+  term("\n\n" + player.feedback + "\n");
   player.feedback = "";
-  term.cyan("Energy");
-  term.bar(1, {barStyle:term.green});
   let room = map.getTile(player.pos.x, player.pos.y);
   let commands = room.commands;
-  term.green("\n\n" + room.title + "\n");
+  term.green("\n" + room.title + "\n");
 
   if (showInventory) {
     if (player.items.length > 0) {
@@ -134,8 +153,8 @@ function runScene(pos) {
 
   if (showItems) {
     if (room.items.length > 0) {
-      term.yellow("There is something here:" + "\n");
-      let quitIdx = room.commands.findIndex(y => y === 'Quit');
+      term.yellow("\nThere is something here:" + "\n");
+      let quitIdx = room.commands.findIndex((y) => y === "Quit");
       room.items.forEach((k) => {
         let verb = "Pick";
         if (k.category === "food") {
@@ -153,7 +172,7 @@ function runScene(pos) {
     showItems = false;
   }
 
-  mainEmitter.emit('acquireInput', room, player);
+  mainEmitter.emit("acquireInput", room, player);
 }
 
 const getInput = (room, player) => {
@@ -197,45 +216,15 @@ const getInput = (room, player) => {
 
     if (res === "Quit") {
       if (!enableDebug) term.clear();
-      term.yellow("Thank you for playing this old style adventure.\nThis game has been built with Archer Engine ");
+      term.yellow(
+        "Thank you for playing this old style adventure.\nThis game has been built with Archer Engine "
+      );
       term.cyan.bold("by Francesco Ricceri");
       process.exit();
     }
 
     runScene(player.pos);
-  }); 
-}
-
-function renderRoomText(screen) {
-  screen.title = "my window title";
-
-  // Create a box perfectly centered horizontally and vertically.
-  var box = blessed.box({
-    top: "0",
-    left: "center",
-    width: 70,
-    height: 15,
-    content: "Hello {bold}world{/bold}!",
-    tags: true,
-    border: {
-      type: "line",
-    },
-    style: {
-      fg: "white",
-      bg: "magenta",
-      border: {
-        fg: "#f0f0f0",
-      },
-      hover: {
-        bg: "green",
-      },
-    },
   });
-
-  // Append our box to the screen.
-  screen.append(box);
-  screen.render();
-  return box;
-}
+};
 
 main(player);
