@@ -28,12 +28,22 @@ let longBow = {
 let mushrooms = { name: "Some mushrooms", energy: 2, category: "food" };
 let items = [longBow, mushrooms];
 
+class Creature {
+  constructor(name, description, dangerous, damage) {
+    this.name = name;
+    this.description = description;
+    this.dangerous = dangerous
+    this.damage = damage;
+  }
+}
+
 class Room {
   constructor(title, commands) {
     this.title = title;
     this.text = "";
     this.commands = commands;
     this.items = [];
+    this.creatures = [];
   }
 }
 
@@ -46,6 +56,8 @@ let roomSouthWest = new Room(
   "You are south-west in the heart the forest",
   directions.concat(basic)
 );
+let fogrod = new Creature('Fogrod the Orc', 'an orc. He looks angry. He holds a crossbow, aimed at you.', true, 10);
+roomSouthWest.creatures.push(fogrod);
 let roomSouthEast = new Room(
   "You are south-east of the forest",
   directions.concat(basic)
@@ -166,10 +178,19 @@ function runScene(pos) {
         }
         term.yellow(k.name + "\n");
       });
-    } else {
-      term.yellow("Nothing special." + "\n");
     }
-    showItems = false;
+
+    if (room.creatures.length > 0) {
+      term.yellow("\nYou are not alone." + "\n");
+      room.creatures.forEach((f)=>{
+        term.yellow("There is "+f.description+"\n");
+      });
+    }
+
+    if (room.items.length === 0 && room.creatures.length === 0)
+      term.yellow("Nothing special." + "\n");
+    
+      showItems = false;
   }
 
   mainEmitter.emit("acquireInput", room, player);
