@@ -116,7 +116,8 @@ var player = {
   energy: 100,
   items: [],
   tasks: [],
-  point:0,
+  points:0,
+  name:'',
   feedback: ""
 };
 
@@ -163,6 +164,7 @@ const checkTask = (player) => {
         if (player.x === j.condition.value.x && player.y === j.condition.value.y) {
           j.completed = true;
           player.feedback = 'Great! Task completed ('+j.title+')';
+          player.points += j.point;
         }
       }
       if (j.condition.condType === "Pick") {
@@ -170,6 +172,7 @@ const checkTask = (player) => {
           if (r.name === j.condition.value) {
             j.completed = true;
             player.feedback = 'Great! Task completed ('+j.title+')';
+            player.points += j.point;
           }
         });
       }
@@ -195,8 +198,8 @@ function runScene(pos) {
   term.bgBlack();
   term.yellow("────────────────────────────────────────────────────────────");
   // put post-spaces
-  
-  term.cyan("\n\n                                         Energy");
+  let score = player.points.toString().padStart(2,'0')
+  term.cyan(`\n\nPoints: ${score}                                 Energy`);
   term.bar(player.energy / 100, { barStyle: term.green });
   checkTask(player);
   term("\n\n" + player.feedback + "\n");
