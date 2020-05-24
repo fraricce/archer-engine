@@ -2,7 +2,14 @@
 var applyDirection = require("./movement.js");
 var term = require("terminal-kit").terminal;
 
-const { Player, Room, Creature, Task, TaskCondition, ConditionType } = require ("./world.js");
+const {
+  Player,
+  Room,
+  Creature,
+  Task,
+  TaskCondition,
+  ConditionType,
+} = require("./world.js");
 
 const EventEmitter = require("events");
 class MainEmitter extends EventEmitter {}
@@ -22,39 +29,6 @@ function main(player) {
 
 let directions = ["North", "East", "South", "West"];
 let basic = ["Inventory", "Look", "Quit"];
-let longBow = {
-  name: "An english longbow",
-  strength: 5,
-  skill: "archer",
-  category: "weapon",
-};
-let mushrooms = { name: "Some mushrooms", energy: 2, category: "food" };
-let items = [longBow, mushrooms];
-
-const findLongbow = new Task('Pick the Longbow','Suddenly, you hear a voice from the forest.. it says that you must find a longbow.');
-const findLongbowCondition = new TaskCondition(1, ConditionType[2]);
-findLongbowCondition.value = "An english longbow";
-findLongbow.condition = findLongbowCondition;
-
-let roomNorthWest = new Room("You are in the wood", directions.concat(basic));
-
-let roomNorthEast = new Room(
-  "You are on the north-east side of the forest",
-  directions.concat(basic)
-);
-roomNorthEast.tasks.push(findLongbow);
-
-let roomSouthWest = new Room(
-  "You are south-west in the heart the forest",
-  directions.concat(basic)
-);
-let fogrod = new Creature('Loic the Orc', 'an orc. He looks angry. He holds a crossbow, aimed at you.', true, 10);
-roomSouthWest.creatures.push(fogrod);
-let roomSouthEast = new Room(
-  "You are south-east of the forest",
-  directions.concat(basic)
-);
-roomSouthEast.items = items;
 
 var map = {
   title: "Company of Archers",
@@ -62,7 +36,77 @@ var map = {
   cols: 2,
   rows: 2,
   tsize: 4,
-  tiles: [roomNorthWest, roomNorthEast, roomSouthWest, roomSouthEast],
+  tiles: [
+    {
+      cardinal: "NW",
+      title: "You are in the wood",
+      text: "The night has come, and the forest looks gloomy, as you go deeper between the trees. Ashes of a fire still smoke.",
+      commands: ["North", "East", "South", "West", "Inventory", "Look", "Quit"],
+      creatures: [],
+      items: [],
+      tasks: [],
+    },
+    {
+      cardinal: "NE",
+      title: "You are on the north-east side of the forest",
+      text: "",
+      commands: ["North", "East", "South", "West", "Inventory", "Look", "Quit"],
+      creatures: [],
+      items: [],
+      tasks: [
+        {
+          title: "Pick the Longbow",
+          description:
+            "Suddenly, you hear a voice from the forest.. it says that you must find a longbow.",
+          read: false,
+          completed: false,
+          point: 10,
+          condition: {
+            id: 1,
+            condType: ConditionType[2],
+            value: "An english longbow",
+          },
+        },
+      ],
+    },
+    {
+      cardinal: "SW",
+      title: "You are south-west in the heart the forest",
+      text: "The deeper you go in the wood, the cooler is the air. Misty fog surrounds leafs and logs, while you have strange feelings.",
+      commands: ["North", "East", "South", "West", "Inventory", "Look", "Quit"],
+      creatures: [
+        {
+          name: "Loic the Orc",
+          description:
+            "an orc. He looks angry. He holds a crossbow, aimed at you.",
+          dangerous: true,
+          damage: 10,
+        },
+      ],
+      items: [],
+      tasks: [],
+    },
+    {
+      cardinal: "SE",
+      title: "You are south-east of the forest",
+      text: "This forest is a labyrinth, a kind of a maze. A nightowl spread its wings on a cedar tree. If you listen carefully, you can hear a flow of waters, probably a river.",
+      commands: ["North", "East", "South", "West", "Inventory", "Look", "Quit"],
+      creatures: [],
+      items: [
+        {
+          name: "An english longbow",
+          strength: 5,
+          skill: "archer",
+          category: "weapon",
+        },
+        { 
+          name: "Some mushrooms", 
+          energy: 2, 
+          category: "food" },
+      ],
+      tasks: [],
+    },
+  ],
   getTile: function (col, row) {
     if (col < 0 || row < 0) return undefined;
     if (col >= map.cols || row >= map.rows) return undefined;
@@ -70,7 +114,8 @@ var map = {
   },
 };
 
-var player = new Player('Fra', {x:0,y:0 })
+var player = new Player("Fra", { x: 0, y: 0 });
+player.feedback = 'Your command:';
 
 const updateRoomObjects = (res, command, room, player) => {
   const item = res.substr(command.length).trim();
@@ -109,39 +154,42 @@ const toLower = (word) => {
 };
 
 const checkTask = (player) => {
-  player.tasks.forEach(j=>{
-    if (!j.completed) { 
+  player.tasks.forEach((j) => {
+    if (!j.completed) {
       if (j.condition.condType === "Visit") {
-        if (player.x === j.condition.value.x && player.y === j.condition.value.y) {
+        if (
+          player.x === j.condition.value.x &&
+          player.y === j.condition.value.y
+        ) {
           j.completed = true;
-          player.feedback = 'Great! Task completed ('+j.title+')';
+          player.feedback = "Great! Task completed (" + j.title + ")";
           player.points += j.point;
         }
       }
       if (j.condition.condType === "Pick") {
-        player.items.forEach(r=>{
+        player.items.forEach((r) => {
           if (r.name === j.condition.value) {
             j.completed = true;
-            player.feedback = 'Great! Task completed ('+j.title+')';
+            player.feedback = "Great! Task completed (" + j.title + ")";
             player.points += j.point;
           }
         });
       }
     }
-  })
-}
+  });
+};
 
 function runScene(pos) {
   if (!enableDebug) term.clear();
   if (enableDebug) term.red(player.pos.x + " " + player.pos.y);
-  
+
   // put pre-spaces
   map.title;
   const lTitle = map.title.length;
-  const preSpaces = 30 - (lTitle / 2);
-  let whiteSpaces = '';
+  const preSpaces = 30 - lTitle / 2;
+  let whiteSpaces = "";
   let j = 0;
-  while(j++<preSpaces) {
+  while (j++ < preSpaces) {
     whiteSpaces += " ";
   }
   term.black(whiteSpaces);
@@ -149,44 +197,51 @@ function runScene(pos) {
   term.bgBlack();
   term.yellow("────────────────────────────────────────────────────────────");
   // put post-spaces
-  let score = player.points.toString().padStart(2,'0')
-  term.cyan(`\n\nPoints: ${score}                                 Energy`);
+  let score = player.points.toString().padStart(2, "0");
+  term.white(`\n\nPoints: ${score}                                 Energy`);
   term.bar(player.energy / 100, { barStyle: term.green });
   checkTask(player);
-  
+
   let room = map.getTile(player.pos.x, player.pos.y);
   let commands = room.commands;
-  term.green("\n\n" + room.title + "\n");
-  
-  term("\n" + player.feedback + "\n");
+  term.wrapColumn( { x: 4 , width: 58 } ) ;
+  term.wrap.brightBlue("\n\n" + room.title + "\n");
+  term.wrap.brightBlue("\n" + room.text);
+
+  term("\n\n" + player.feedback + "\n");
   player.feedback = "";
 
   if (room.tasks.length > 0) {
-    room.tasks.forEach(h=>{
+    room.tasks.forEach((h) => {
       if (!h.read) {
-        term.brightBlue(h.description+"\n");
+        term.wrapColumn( { x: 4 , width: 58 } ) ;
+        term.wrap.brightBlue("\n"+h.description + "\n");
         h.read = true;
         player.tasks.push(h);
       }
     });
   }
-  
+
   if (showInventory) {
     if (player.items.length > 0) {
-      term.yellow("You have ");
+      term.wrapColumn( { x: 4 , width: 58 } ) ;
+      term.wrap.yellow("\nYou have ");
       let i = 0;
       player.items.forEach((y) => {
-        term.yellow(toLower(y.name));
+        term.wrapColumn( { x: 4 , width: 58 } ) ;
+        term.wrap.yellow(toLower(y.name));
       });
     } else {
-      term.yellow("You have nothing." + "\n");
+      term.wrapColumn( { x: 4 , width: 58 } ) ;
+      term.wrap.yellow("\nYou have nothing." + "\n");
     }
     showInventory = false;
   }
 
   if (showItems) {
     if (room.items.length > 0) {
-      term.yellow("\nThere is something here:" + "\n");
+      term.wrapColumn( { x: 4 , width: 58 } ) ;
+      term.wrap.yellow("\nThere is something here:" + "\n");
       let quitIdx = room.commands.findIndex((y) => y === "Quit");
       room.items.forEach((k) => {
         let verb = "Pick";
@@ -197,21 +252,24 @@ function runScene(pos) {
         if (room.commands.indexOf(newItem) < 0) {
           room.commands.splice(quitIdx++, 0, verb + " " + k.name);
         }
-        term.yellow(k.name + "\n");
+        term.wrapColumn( { x: 4 , width: 58 } ) ;
+        term.wrap.yellow(k.name + "\n\n");
       });
     }
 
     if (room.creatures.length > 0) {
-      term.yellow("\nYou are not alone." + "\n");
-      room.creatures.forEach((f)=>{
-        term.yellow("There is "+f.description+"\n");
+      term.wrapColumn( { x: 4 , width: 58 } ) ;
+      term.wrap.yellow("\nYou are not alone." + "\n");
+      room.creatures.forEach((f) => {
+        term.wrapColumn( { x: 4 , width: 58 } ) ;
+        term.wrap.yellow("There is " + f.description + "\n");
       });
     }
 
     if (room.items.length === 0 && room.creatures.length === 0)
       term.yellow("\nNothing special.\n");
-    
-      showItems = false;
+
+    showItems = false;
   }
 
   mainEmitter.emit("acquireInput", room, player);
@@ -234,12 +292,12 @@ const getInput = (room, player) => {
 
     if (res === "Look") {
       showItems = true;
-      player.feedback = 'Look';
+      player.feedback = "Look";
     }
 
     if (res === "Inventory") {
       showInventory = true;
-      player.feedback = 'Inventory';
+      player.feedback = "Inventory";
     }
 
     if (res === "North") {
