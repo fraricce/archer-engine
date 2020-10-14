@@ -1,5 +1,5 @@
 "use strict";
-var applyDirection = require("./movement.js");
+var mov = require("./movement.js");
 var term = require("terminal-kit").terminal;
 
 const {
@@ -106,12 +106,7 @@ var map = {
       ],
       tasks: [],
     },
-  ],
-  getTile: function (col, row) {
-    if (col < 0 || row < 0) return undefined;
-    if (col >= map.cols || row >= map.rows) return undefined;
-    return this.tiles[row * map.cols + col];
-  },
+  ]
 };
 
 var player = new Player("Fra", { x: 0, y: 0 });
@@ -202,7 +197,7 @@ function runScene(pos) {
   term.bar(player.energy / 100, { barStyle: term.green });
   checkTask(player);
 
-  let room = map.getTile(player.pos.x, player.pos.y);
+  let room = mov.getTile(map, player.pos.x, player.pos.y);
   let commands = room.commands;
   term.wrapColumn( { x: 4 , width: 58 } ) ;
   term.wrap.brightBlue("\n\n" + room.title + "\n");
@@ -301,19 +296,19 @@ const getInput = (room, player) => {
     }
 
     if (res === "North") {
-      applyDirection(map, player, "North");
+      mov.applyDirection(map, player, "North");
     }
 
     if (res === "East") {
-      applyDirection(map, player, "East");
+      mov.applyDirection(map, player, "East");
     }
 
     if (res === "South") {
-      applyDirection(map, player, "South");
+      mov.applyDirection(map, player, "South");
     }
 
     if (res === "West") {
-      applyDirection(map, player, "West");
+      mov.applyDirection(map, player, "West");
     }
 
     if (res === "Quit") {

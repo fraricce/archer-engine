@@ -1,17 +1,23 @@
-module.exports = (map, player, direction) => {
+const getTile = (map, col, row) => {
+  if (col < 0 || row < 0) return undefined;
+  if (col >= map.cols || row >= map.rows) return undefined;
+  return map.tiles[row * map.cols + col];
+}
+
+const applyDirection = (map, player, direction) => {
   let testTile = undefined;
   switch (direction) {
     case "North":
-      testTile = map.getTile(player.pos.x, player.pos.y - 1);
+      testTile = getTile(map, player.pos.x, player.pos.y - 1);
       break;
     case "East":
-      testTile = map.getTile(player.pos.x + 1, player.pos.y);
+      testTile = getTile(map, player.pos.x + 1, player.pos.y);
       break;
     case "South":
-      testTile = map.getTile(player.pos.x, player.pos.y + 1);
+      testTile = getTile(map, player.pos.x, player.pos.y + 1);
       break;
     case "West":
-      testTile = map.getTile(player.pos.x - 1, player.pos.y);
+      testTile = getTile(map, player.pos.x - 1, player.pos.y);
       break;
   }
   if (!testTile) {
@@ -34,3 +40,5 @@ module.exports = (map, player, direction) => {
     } 
   }
 };
+
+module.exports = { applyDirection, getTile }
