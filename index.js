@@ -240,10 +240,11 @@ const getInput = (room, player) => {
 
     if (res === "Quit") {
       if (!enableDebug) term.clear();
+      term.cyan.bold(" ─────────────────────────────────────────────");
       term.yellow(
-        "Thank you for playing this old style adventure.\nThis game has been built with Archer Engine "
-      );
-      term.cyan.bold("by Francesco Ricceri");
+        "\n Thank you for playing this adventure! <3\n");
+      term.cyan.bold(" Made with Archer Engine, by Francesco Ricceri\n");
+      term.cyan.bold(" ─────────────────────────────────────────────\n");
       process.exit();
     }
 
