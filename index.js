@@ -1,6 +1,7 @@
 "use strict";
 var mov = require("./movement.js");
 var term = require("terminal-kit").terminal;
+const fs = require('fs');
 
 const {
   Player,
@@ -21,6 +22,8 @@ let enableDebug = false;
 
 function main(player) {
   enableDebug = process.argv.findIndex((i) => i === "-debug") >= 0;
+  let rawdata = fs.readFileSync('adventure.json');
+  map = JSON.parse(rawdata);
   mainEmitter.on("acquireInput", (room, player) => {
     getInput(room, player);
   });
@@ -30,84 +33,7 @@ function main(player) {
 let directions = ["North", "East", "South", "West"];
 let basic = ["Inventory", "Look", "Quit"];
 
-var map = {
-  title: "Company of Archers",
-  author: "Francesco Ricceri",
-  cols: 2,
-  rows: 2,
-  tsize: 4,
-  tiles: [
-    {
-      cardinal: "NW",
-      title: "You are in the wood",
-      text: "The night has come, and the forest looks gloomy, as you go deeper between the trees. Ashes of a fire still smoke.",
-      commands: ["North", "East", "South", "West", "Inventory", "Look", "Quit"],
-      creatures: [],
-      items: [],
-      tasks: [],
-    },
-    {
-      cardinal: "NE",
-      title: "You are on the north-east side of the forest",
-      text: "",
-      commands: ["North", "East", "South", "West", "Inventory", "Look", "Quit"],
-      creatures: [],
-      items: [],
-      tasks: [
-        {
-          title: "Pick the Longbow",
-          description:
-            "Suddenly, you hear a voice from the forest.. it says that you must find a longbow.",
-          read: false,
-          completed: false,
-          point: 10,
-          condition: {
-            id: 1,
-            condType: ConditionType[2],
-            value: "An english longbow",
-          },
-        },
-      ],
-    },
-    {
-      cardinal: "SW",
-      title: "You are south-west in the heart the forest",
-      text: "The deeper you go in the wood, the cooler is the air. Misty fog surrounds leafs and logs, while you have strange feelings.",
-      commands: ["North", "East", "South", "West", "Inventory", "Look", "Quit"],
-      creatures: [
-        {
-          name: "Loic the Orc",
-          description:
-            "an orc. He looks angry. He holds a crossbow, aimed at you.",
-          dangerous: true,
-          damage: 10,
-        },
-      ],
-      items: [],
-      tasks: [],
-    },
-    {
-      cardinal: "SE",
-      title: "You are south-east of the forest",
-      text: "This forest is a labyrinth, a kind of a maze. A nightowl spread its wings on a cedar tree. If you listen carefully, you can hear a flow of waters, probably a river.",
-      commands: ["North", "East", "South", "West", "Inventory", "Look", "Quit"],
-      creatures: [],
-      items: [
-        {
-          name: "An english longbow",
-          strength: 5,
-          skill: "archer",
-          category: "weapon",
-        },
-        { 
-          name: "Some mushrooms", 
-          energy: 2, 
-          category: "food" },
-      ],
-      tasks: [],
-    },
-  ]
-};
+var map = {};
 
 var player = new Player("Fra", { x: 0, y: 0 });
 player.feedback = 'Your command:';
@@ -230,6 +156,7 @@ function runScene(pos) {
       term.wrapColumn( { x: 4 , width: 58 } ) ;
       term.wrap.yellow("\nYou have nothing." + "\n");
     }
+    term.wrap.black("\n")
     showInventory = false;
   }
 
