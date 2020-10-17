@@ -16,10 +16,14 @@ const applyDirection = (map, player, direction) => {
       testTile = getTile(map, player.pos.x + 1, player.pos.y);
       break;
     case "South":
+    case "Next":
       testTile = getTile(map, player.pos.x, player.pos.y + 1);
       break;
     case "West":
       testTile = getTile(map, player.pos.x - 1, player.pos.y);
+      break;
+    default:
+      testTile = getTile(map, player.pos.x, player.pos.y + 1);
       break;
   }
 
@@ -40,6 +44,9 @@ const applyDirection = (map, player, direction) => {
         break;
       case "West":
         player.pos.x = player.pos.x - 1;
+        break;
+      default:
+        player.pos.y = player.pos.y + 1;
         break;
     } 
   }

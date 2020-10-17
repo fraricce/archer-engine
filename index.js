@@ -205,6 +205,8 @@ const getInput = (room, player) => {
         player,
         updateRoomObjects(res, "Pick", room, player)
       );
+      runScene(player.pos);
+      return;
     }
 
     if (res.indexOf("Eat") >= 0) {
@@ -221,22 +223,6 @@ const getInput = (room, player) => {
       player.feedback = "Inventory";
     }
 
-    if (res === "North") {
-      mov.applyDirection(map, player, "North");
-    }
-
-    if (res === "East") {
-      mov.applyDirection(map, player, "East");
-    }
-
-    if (res === "South" || res == "Next") {
-      mov.applyDirection(map, player, "South");
-    }
-
-    if (res === "West") {
-      mov.applyDirection(map, player, "West");
-    }
-
     if (res === "Quit") {
       if (!enableDebug) term.clear();
       term.cyan.bold(" ─────────────────────────────────────────────");
@@ -246,6 +232,8 @@ const getInput = (room, player) => {
       term.cyan.bold(" ─────────────────────────────────────────────\n");
       process.exit();
     }
+
+    mov.applyDirection(map, player, res);
 
     runScene(player.pos);
   });
