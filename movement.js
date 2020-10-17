@@ -5,7 +5,9 @@ const getTile = (map, col, row) => {
 }
 
 const applyDirection = (map, player, direction) => {
+ 
   let testTile = undefined;
+  
   switch (direction) {
     case "North":
       testTile = getTile(map, player.pos.x, player.pos.y - 1);
@@ -20,6 +22,7 @@ const applyDirection = (map, player, direction) => {
       testTile = getTile(map, player.pos.x - 1, player.pos.y);
       break;
   }
+
   if (!testTile) {
     player.feedback = "Cannot go that way";
   } else {
@@ -32,6 +35,7 @@ const applyDirection = (map, player, direction) => {
         player.pos.x = player.pos.x + 1;
         break;
       case "South":
+      case "Next":
         player.pos.y = player.pos.y + 1;
         break;
       case "West":

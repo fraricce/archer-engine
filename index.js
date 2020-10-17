@@ -22,7 +22,7 @@ let enableDebug = false;
 
 function main(player) {
   enableDebug = process.argv.findIndex((i) => i === "-debug") >= 0;
-  let rawdata = fs.readFileSync('adventure.json');
+  let rawdata = fs.readFileSync('first-avenue.json');
   map = JSON.parse(rawdata);
   mainEmitter.on("acquireInput", (room, player) => {
     getInput(room, player);
@@ -104,7 +104,6 @@ function runScene(pos) {
   if (!enableDebug) term.clear();
   if (enableDebug) term.red(player.pos.x + " " + player.pos.y);
 
-  // put pre-spaces
   map.title;
   const lTitle = map.title.length;
   const preSpaces = 30 - lTitle / 2;
@@ -117,7 +116,7 @@ function runScene(pos) {
   term.yellow(map.title + "\n");
   term.bgBlack();
   term.yellow("────────────────────────────────────────────────────────────");
-  // put post-spaces
+
   let score = player.points.toString().padStart(2, "0");
   term.white(`\n\nPoints: ${score}                                 Energy`);
   term.bar(player.energy / 100, { barStyle: term.green });
@@ -125,7 +124,7 @@ function runScene(pos) {
 
   let room = mov.getTile(map, player.pos.x, player.pos.y);
   let commands = room.commands;
-  term.wrapColumn( { x: 4 , width: 58 } ) ;
+  term.wrapColumn( { x: 2 , width: 58 } ) ;
   term.wrap.brightBlue("\n\n" + room.title + "\n");
   term.wrap.brightBlue("\n" + room.text);
 
@@ -230,7 +229,7 @@ const getInput = (room, player) => {
       mov.applyDirection(map, player, "East");
     }
 
-    if (res === "South") {
+    if (res === "South" || res == "Next") {
       mov.applyDirection(map, player, "South");
     }
 

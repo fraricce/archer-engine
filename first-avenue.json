@@ -1,0 +1,59 @@
+{
+  "title": "A First Avenue Story",
+  "author": "Francesco Ricceri",
+  "cols": 1,
+  "rows": 5,
+  "tsize": 5,
+  "tiles": [
+    {
+      "cardinal": "S",
+      "title": "First Avenue",
+      "text": "You just paid the lunch at the Double Dragon. The cashier thanks you while cleaning a golden lucky cat. You are now off the restaurant. A stream of yellow cabs passes by.",
+      "commands": ["Take a taxi", "Quit"],
+      "creatures": [],
+      "items": [],
+      "tasks": []
+    },
+    {
+      "cardinal": "N",
+      "title": "On a taxi in First Avenue",
+      "text": "-Take me to the end of First Avenue. You just say -Yes sir.\nYou are in the middle of a traffic jam. The stream goes slowly.\nA kebak kiosk on the right. The man at the kiosk is preparing a frankfurt for a customer. He adds some mustard, take a couple greens and gives the hotdog.",
+      "commands": ["Next", "Inventory", "Look", "Quit"],
+      "creatures": [],
+      "items": [],
+      "tasks": []
+    },
+    {
+      "cardinal": "N",
+      "title": "A couple blocks ahead..",
+      "text": "A barber shop is full of customers. Some are sitting inside, others are standing outside. A cleaner is working onthe window of an hardware store.",
+      "commands": ["Next", "Inventory", "Look", "Quit"],
+      "creatures": [],
+      "items": [],
+      "tasks": []
+    },
+    {
+      "cardinal": "N",
+      "title": "1st Ave / E 25st",
+      "text": "In the middle of ywo large brick buildings. Red lights, the car stops gently while the driver's phone is ringing. A middle-east melody plays in the car. Why he doesn't take the phone?",
+      "commands": ["Next", "Inventory", "Look", "Quit"],
+      "creatures": [],
+      "items": [],
+      "tasks": []
+    },
+    {
+      "cardinal": "N",
+      "title": "1st Ave / E 25st",
+      "text": "The phone is still ringing. The driver doesn't even look at the phone.",
+      "commands": ["Next", "Inventory", "Look", "Quit"],
+      "creatures": [],
+      "items": [
+        { 
+          "name": "A ringing phone", 
+          "energy": 0, 
+          "category": "device" }
+      ],
+      "tasks": []
+    }
+  ]
+}
