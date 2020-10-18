@@ -19,6 +19,7 @@ const mainEmitter = new MainEmitter();
 let showItems = false;
 let showInventory = false;
 let enableDebug = false;
+const textWidth = 75;
 
 function main(player) {
   enableDebug = process.argv.findIndex((i) => i === "-debug") >= 0;
@@ -124,7 +125,7 @@ function runScene(pos) {
 
   let room = mov.getTile(map, player.pos.x, player.pos.y);
   let commands = room.commands;
-  term.wrapColumn( { x: 2 , width: 58 } ) ;
+  term.wrapColumn( { x: 2 , width: textWidth } ) ;
   term.wrap.brightBlue("\n\n" + room.title + "\n");
   term.wrap.brightBlue("\n" + room.text);
 
@@ -134,7 +135,7 @@ function runScene(pos) {
   if (room.tasks.length > 0) {
     room.tasks.forEach((h) => {
       if (!h.read) {
-        term.wrapColumn( { x: 4 , width: 58 } ) ;
+        term.wrapColumn( { x: 4 , width: textWidth } ) ;
         term.wrap.brightBlue("\n"+h.description + "\n");
         h.read = true;
         player.tasks.push(h);
@@ -144,24 +145,23 @@ function runScene(pos) {
 
   if (showInventory) {
     if (player.items.length > 0) {
-      term.wrapColumn( { x: 4 , width: 58 } ) ;
+      term.wrapColumn( { x: 4 , width: textWidth } ) ;
       term.wrap.yellow("\nYou have ");
       let i = 0;
       player.items.forEach((y) => {
-        term.wrapColumn( { x: 4 , width: 58 } ) ;
+        term.wrapColumn( { x: 4 , width: textWidth } ) ;
         term.wrap.yellow(toLower(y.name));
       });
     } else {
-      term.wrapColumn( { x: 4 , width: 58 } ) ;
+      term.wrapColumn( { x: 4 , width: textWidth } ) ;
       term.wrap.yellow("\nYou have nothing." + "\n");
     }
-    term.wrap.black("\n")
     showInventory = false;
   }
 
   if (showItems) {
     if (room.items.length > 0) {
-      term.wrapColumn( { x: 4 , width: 58 } ) ;
+      term.wrapColumn( { x: 4 , width: textWidth } ) ;
       term.wrap.yellow("\nThere is something here:" + "\n");
       let quitIdx = room.commands.findIndex((y) => y === "Quit");
       room.items.forEach((k) => {
@@ -173,22 +173,24 @@ function runScene(pos) {
         if (room.commands.indexOf(newItem) < 0) {
           room.commands.splice(quitIdx++, 0, verb + " " + k.name);
         }
-        term.wrapColumn( { x: 4 , width: 58 } ) ;
+        term.wrapColumn( { x: 4 , width: textWidth } ) ;
         term.wrap.yellow(k.name + "\n\n");
       });
     }
 
     if (room.creatures.length > 0) {
-      term.wrapColumn( { x: 4 , width: 58 } ) ;
+      term.wrapColumn( { x: 4 , width: textWidth } ) ;
       term.wrap.yellow("\nYou are not alone." + "\n");
       room.creatures.forEach((f) => {
-        term.wrapColumn( { x: 4 , width: 58 } ) ;
+        term.wrapColumn( { x: 4 , width: textWidth } ) ;
         term.wrap.yellow("There is " + f.description + "\n");
       });
     }
 
-    if (room.items.length === 0 && room.creatures.length === 0)
-      term.yellow("\nNothing special.\n");
+    if (room.items.length === 0 && room.creatures.length === 0) {
+      term.wrapColumn( { x: 4 , width: textWidth } ) ;
+      term.wrap.yellow("\nNothing special." + "\n");      
+    }
 
     showItems = false;
   }
@@ -216,11 +218,15 @@ const getInput = (room, player) => {
     if (res === "Look") {
       showItems = true;
       player.feedback = "Look";
+      runScene(player.pos);
+      return;
     }
 
     if (res === "Inventory") {
       showInventory = true;
       player.feedback = "Inventory";
+      runScene(player.pos);
+      return;
     }
 
     if (res === "Quit") {
