@@ -31,9 +31,6 @@ function main(player) {
   runScene(player.pos);
 }
 
-let directions = ["North", "East", "South", "West"];
-let basic = ["Inventory", "Look", "Quit"];
-
 var map = {};
 
 var player = new Player("Fra", { x: 0, y: 0 });
@@ -107,7 +104,7 @@ function runScene(pos) {
 
   map.title;
   const lTitle = map.title.length;
-  const preSpaces = 30 - lTitle / 2;
+  const preSpaces = 40 - lTitle / 2;
   let whiteSpaces = "";
   let j = 0;
   while (j++ < preSpaces) {
@@ -116,11 +113,21 @@ function runScene(pos) {
   term.black(whiteSpaces);
   term.yellow(map.title + "\n");
   term.bgBlack();
-  term.yellow("────────────────────────────────────────────────────────────");
+  term.yellow("────────────────────────────────────────────────────────────────────────────");
 
   let score = player.points.toString().padStart(2, "0");
-  term.white(`\n\nPoints: ${score}                                 Energy`);
-  term.bar(player.energy / 100, { barStyle: term.green });
+  let energyField = map.showEnergy ? "Energy" : "      ";
+  let scoreField = map.showPoints ? "Points:" + " " + score : "             ";
+
+  if ((map.showPoints || map.showEnergy) || (map.showPoints && map.showEnergy)) {
+    term.white(`\n\n ${scoreField}                                               ${energyField}`);
+  }
+  
+  
+  if (map.showEnergy) {
+    term.bar(player.energy / 100, { barStyle: term.green });
+  }
+  
   checkTask(player);
 
   let room = mov.getTile(map, player.pos.x, player.pos.y);
@@ -129,7 +136,7 @@ function runScene(pos) {
   term.wrap.brightBlue("\n\n" + room.title + "\n");
   term.wrap.brightBlue("\n" + room.text);
 
-  term("\n\n" + player.feedback + "\n");
+  term("\n\n " + player.feedback + "\n");
   player.feedback = "";
 
   if (room.tasks.length > 0) {

@@ -4,6 +4,8 @@
   "cols": 1,
   "rows": 6,
   "tsize": 6,
+  "showPoints":true,
+  "showEnergy":true,
   "tiles": [
     {
       "cardinal": "S",

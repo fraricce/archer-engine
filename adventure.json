@@ -4,6 +4,8 @@
   "cols": 2,
   "rows": 2,
   "tsize": 4,
+  "showPoints":false,
+  "showEnergy":false,
   "tiles": [
     {
       "cardinal": "NW",
