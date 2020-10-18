@@ -124,7 +124,7 @@ function runScene(pos) {
   checkTask(player);
 
   let room = mov.getTile(map, player.pos.x, player.pos.y);
-  let commands = room.commands;
+
   term.wrapColumn( { x: 2 , width: textWidth } ) ;
   term.wrap.brightBlue("\n\n" + room.title + "\n");
   term.wrap.brightBlue("\n" + room.text);
@@ -146,12 +146,12 @@ function runScene(pos) {
   if (showInventory) {
     if (player.items.length > 0) {
       term.wrapColumn( { x: 4 , width: textWidth } ) ;
-      term.wrap.yellow("\nYou have ");
-      let i = 0;
+      term.wrap.yellow("\nYou have:" + "\n");
       player.items.forEach((y) => {
         term.wrapColumn( { x: 4 , width: textWidth } ) ;
         term.wrap.yellow(toLower(y.name));
       });
+      term.black("\n");
     } else {
       term.wrapColumn( { x: 4 , width: textWidth } ) ;
       term.wrap.yellow("\nYou have nothing." + "\n");
@@ -174,7 +174,7 @@ function runScene(pos) {
           room.commands.splice(quitIdx++, 0, verb + " " + k.name);
         }
         term.wrapColumn( { x: 4 , width: textWidth } ) ;
-        term.wrap.yellow(k.name + "\n\n");
+        term.wrap.yellow(toLower(k.name) + "\n");
       });
     }
 

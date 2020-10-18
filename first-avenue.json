@@ -49,6 +49,7 @@
       "creatures": [],
       "items": [
         { 
+          "id":"phone1",
           "name": "A ringing phone", 
           "energy": 0, 
           "category": "device" }
