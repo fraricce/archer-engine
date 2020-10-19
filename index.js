@@ -126,12 +126,12 @@ const drawHeader = (title, showPoints, showEnergy, points, energy) => {
 
 function runScene(pos) {
   if (!enableDebug) term.clear();
-  if (enableDebug) term.red(player.pos.x + " " + player.pos.y);
+  if (enableDebug) term.red(pos.x + " " + pos.y);
 
   drawHeader(map.title, map.showPoints, map.showEnergy, player.points, player.energy);  
   checkTask(player);
 
-  let room = mov.getTile(map, player.pos.x, player.pos.y);
+  let room = mov.getTile(map, pos.x, pos.y);
 
   term.wrapColumn( { x: 2 , width: textWidth } ) ;
   term.wrap.brightBlue("\n\n" + room.title + "\n");
