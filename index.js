@@ -98,12 +98,8 @@ const checkTask = (player) => {
   });
 };
 
-function runScene(pos) {
-  if (!enableDebug) term.clear();
-  if (enableDebug) term.red(player.pos.x + " " + player.pos.y);
-
-  map.title;
-  const lTitle = map.title.length;
+const drawHeader = (title, showPoints, showEnergy, points, energy) => {
+  const lTitle = title.length;
   const preSpaces = 40 - lTitle / 2;
   let whiteSpaces = "";
   let j = 0;
@@ -111,23 +107,28 @@ function runScene(pos) {
     whiteSpaces += " ";
   }
   term.black(whiteSpaces);
-  term.yellow(map.title + "\n");
+  term.yellow(title + "\n");
   term.bgBlack();
   term.yellow("────────────────────────────────────────────────────────────────────────────");
 
-  let score = player.points.toString().padStart(2, "0");
-  let energyField = map.showEnergy ? "Energy" : "      ";
-  let scoreField = map.showPoints ? "Points:" + " " + score : "             ";
+  let score = points.toString().padStart(2, "0");
+  let energyField = showEnergy ? "Energy" : "      ";
+  let scoreField = showPoints ? "Points:" + " " + score : "             ";
 
-  if ((map.showPoints || map.showEnergy) || (map.showPoints && map.showEnergy)) {
+  if ((showPoints || showEnergy) || (showPoints && showEnergy)) {
     term.white(`\n\n ${scoreField}                                               ${energyField}`);
   }
   
-  
-  if (map.showEnergy) {
-    term.bar(player.energy / 100, { barStyle: term.green });
+  if (showEnergy) {
+    term.bar(energy / 100, { barStyle: term.green });
   }
-  
+}
+
+function runScene(pos) {
+  if (!enableDebug) term.clear();
+  if (enableDebug) term.red(player.pos.x + " " + player.pos.y);
+
+  drawHeader(map.title, map.showPoints, map.showEnergy, player.points, player.energy);  
   checkTask(player);
 
   let room = mov.getTile(map, player.pos.x, player.pos.y);

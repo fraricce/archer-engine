@@ -2,10 +2,10 @@
   "title": "A First Avenue Story",
   "author": "Francesco Ricceri",
   "cols": 1,
-  "rows": 6,
-  "tsize": 6,
+  "rows": 8,
+  "tsize": 8,
   "showPoints":true,
-  "showEnergy":true,
+  "showEnergy":false,
   "tiles": [
     {
       "cardinal": "S",
@@ -61,7 +61,7 @@
     {
       "cardinal": "N",
       "title": "Mount Carmel Place",
-      "text": "Falling leaves after a sudden gut. A clochard pushing his cart full of clothes and empty bottles, looks at you.",
+      "text": "Golden leaves are falling, after a sudden gut. A clochard pushing his cart full of clothes and empty bottles.",
       "commands": ["Next", "Inventory", "Look", "Quit"],
       "creatures": [],
       "items": [
@@ -70,6 +70,26 @@
           "energy": 0, 
           "category": "device" }
       ],
+      "tasks": []
+    }
+    ,
+    {
+      "cardinal": "N",
+      "title": "1st Ave, E 37st",
+      "text": "After a couple blocks, now the taxy stops behind an UPS van. A guy gets out of the van with a package. The policeman at the crossroad whistles at him a couple times. A fire engine is coming from 37st.",
+      "commands": ["Next", "Inventory", "Look", "Quit"],
+      "creatures": [],
+      "items": [],
+      "tasks": []
+    }
+    ,
+    {
+      "cardinal": "N",
+      "title": "United Nations Plaza",
+      "text": "A swift lane change to avoid the 1st ave tunnel, and you come at UN Plaza. Such an imposing building. Clouds reflections on the glass. You remember that awesome day when you visited the UN building.\nThe 39-story Secretariat Building was completed in 1950. On October 29, 2012, the basement of the UN complex was flooded due to Hurricane Sandy, leading to a three-day closure and the relocation of several offices.",
+      "commands": ["Next", "Inventory", "Look", "Quit"],
+      "creatures": [],
+      "items": [],
       "tasks": []
     }
   ]
