@@ -1,7 +1,7 @@
 "use strict";
 var mov = require("./movement.js");
 var term = require("terminal-kit").terminal;
-const fs = require('fs');
+const fs = require("fs");
 
 const {
   Player,
@@ -18,12 +18,13 @@ const mainEmitter = new MainEmitter();
 
 let showItems = false;
 let showInventory = false;
+let showDevice = false;
 let enableDebug = false;
 const textWidth = 75;
 
 function main(player) {
   enableDebug = process.argv.findIndex((i) => i === "-debug") >= 0;
-  let rawdata = fs.readFileSync('first-avenue.json');
+  let rawdata = fs.readFileSync("fishermanstale.json");
   map = JSON.parse(rawdata);
   mainEmitter.on("acquireInput", (room, player) => {
     getInput(room, player);
@@ -34,7 +35,7 @@ function main(player) {
 var map = {};
 
 var player = new Player("Fra", { x: 0, y: 0 });
-player.feedback = 'Your command:';
+player.feedback = "Your command:";
 
 const updateRoomObjects = (res, command, room, player) => {
   const item = res.substr(command.length).trim();
@@ -109,31 +110,41 @@ const drawHeader = (title, showPoints, showEnergy, points, energy) => {
   term.black(whiteSpaces);
   term.yellow(title + "\n");
   term.bgBlack();
-  term.yellow("────────────────────────────────────────────────────────────────────────────");
+  term.yellow(
+    "────────────────────────────────────────────────────────────────────────────"
+  );
 
   let score = points.toString().padStart(2, "0");
   let energyField = showEnergy ? "Energy" : "      ";
   let scoreField = showPoints ? "Points:" + " " + score : "             ";
 
-  if ((showPoints || showEnergy) || (showPoints && showEnergy)) {
-    term.white(`\n\n ${scoreField}                                               ${energyField}`);
+  if (showPoints || showEnergy || (showPoints && showEnergy)) {
+    term.white(
+      `\n\n ${scoreField}                                               ${energyField}`
+    );
   }
-  
+
   if (showEnergy) {
     term.bar(energy / 100, { barStyle: term.green });
   }
-}
+};
 
-function runScene(pos) {
+function runScene(pos, usedItem = undefined) {
   if (!enableDebug) term.clear();
   if (enableDebug) term.red(pos.x + " " + pos.y);
 
-  drawHeader(map.title, map.showPoints, map.showEnergy, player.points, player.energy);  
+  drawHeader(
+    map.title,
+    map.showPoints,
+    map.showEnergy,
+    player.points,
+    player.energy
+  );
   checkTask(player);
 
   let room = mov.getTile(map, pos.x, pos.y);
 
-  term.wrapColumn( { x: 2 , width: textWidth } ) ;
+  term.wrapColumn({ x: 2, width: textWidth });
   term.wrap.brightBlue("\n\n" + room.title + "\n");
   term.wrap.brightBlue("\n" + room.text);
 
@@ -143,25 +154,33 @@ function runScene(pos) {
   if (room.tasks.length > 0) {
     room.tasks.forEach((h) => {
       if (!h.read) {
-        term.wrapColumn( { x: 4 , width: textWidth } ) ;
-        term.wrap.brightBlue("\n"+h.description + "\n");
+        term.wrapColumn({ x: 4, width: textWidth });
+        term.wrap.brightBlue("\n" + h.description + "\n");
         h.read = true;
         player.tasks.push(h);
       }
     });
   }
 
+  if (showDevice && usedItem) {
+    term.wrapColumn({ x: 4, width: textWidth });
+    term.wrap.yellow("\nUsing " + usedItem.name + "\n");
+    term.wrap.yellow(usedItem.messageAfterUse + "\n");
+    player
+    showDevice = false;
+  }
+
   if (showInventory) {
     if (player.items.length > 0) {
-      term.wrapColumn( { x: 4 , width: textWidth } ) ;
+      term.wrapColumn({ x: 4, width: textWidth });
       term.wrap.yellow("\nYou have:" + "\n");
       player.items.forEach((y) => {
-        term.wrapColumn( { x: 4 , width: textWidth } ) ;
+        term.wrapColumn({ x: 4, width: textWidth });
         term.wrap.yellow(toLower(y.name));
       });
       term.black("\n");
     } else {
-      term.wrapColumn( { x: 4 , width: textWidth } ) ;
+      term.wrapColumn({ x: 4, width: textWidth });
       term.wrap.yellow("\nYou have nothing." + "\n");
     }
     showInventory = false;
@@ -169,35 +188,47 @@ function runScene(pos) {
 
   if (showItems) {
     if (room.items.length > 0) {
-      term.wrapColumn( { x: 4 , width: textWidth } ) ;
+      term.wrapColumn({ x: 4, width: textWidth });
       term.wrap.yellow("\nThere is something here:" + "\n");
       let quitIdx = room.commands.findIndex((y) => y === "Quit");
       room.items.forEach((k) => {
-        let verb = "Pick";
+        let verb = "";
+
         if (k.category === "food") {
           verb = "Eat";
         }
+
+        if (k.canPick) {
+          verb = "Pick";
+        }
+
+        if (k.canUse) {
+          verb = "Use";
+        }
+
         let newItem = verb + " " + k.name;
+
         if (room.commands.indexOf(newItem) < 0) {
           room.commands.splice(quitIdx++, 0, verb + " " + k.name);
         }
-        term.wrapColumn( { x: 4 , width: textWidth } ) ;
+
+        term.wrapColumn({ x: 4, width: textWidth });
         term.wrap.yellow(toLower(k.name) + "\n");
       });
     }
 
     if (room.creatures.length > 0) {
-      term.wrapColumn( { x: 4 , width: textWidth } ) ;
+      term.wrapColumn({ x: 4, width: textWidth });
       term.wrap.yellow("\nYou are not alone." + "\n");
       room.creatures.forEach((f) => {
-        term.wrapColumn( { x: 4 , width: textWidth } ) ;
+        term.wrapColumn({ x: 4, width: textWidth });
         term.wrap.yellow("There is " + f.description + "\n");
       });
     }
 
     if (room.items.length === 0 && room.creatures.length === 0) {
-      term.wrapColumn( { x: 4 , width: textWidth } ) ;
-      term.wrap.yellow("\nNothing special." + "\n");      
+      term.wrapColumn({ x: 4, width: textWidth });
+      term.wrap.yellow("\nNothing special." + "\n");
     }
 
     showItems = false;
@@ -210,12 +241,30 @@ const getInput = (room, player) => {
   term.singleColumnMenu(room.commands, function (error, response) {
     let res = response.selectedText;
 
+    // look into aliases
+    var alias = map.customCommands?.find((k) => k.alias === res);
+    if (alias) {
+      res = alias.mapTo;
+    }
+
     if (res.indexOf("Pick") >= 0) {
       updatePlayerAfterPick(
         player,
         updateRoomObjects(res, "Pick", room, player)
       );
       runScene(player.pos);
+      return;
+    }
+
+    if (res.indexOf("Use") >= 0) {
+      showDevice = true;
+      player.feedback = "Use";
+      const cmd = "Use";
+      const item = res.substr(cmd.length).trim();
+      const usedItem = room.items.find((j) => j.name === item);
+      if (!usedItem) return;
+      player.points += usedItem.point
+      runScene(player.pos, usedItem);
       return;
     }
 
@@ -240,11 +289,18 @@ const getInput = (room, player) => {
     if (res === "Quit") {
       if (!enableDebug) term.clear();
       term.cyan.bold(" ─────────────────────────────────────────────");
-      term.yellow(
-        "\n Thank you for playing this adventure! <3\n");
+      term.yellow("\n Thank you for playing this adventure! <3\n");
       term.cyan.bold(" Made with Archer Engine, by Francesco Ricceri\n");
       term.cyan.bold(" ─────────────────────────────────────────────\n");
       process.exit();
+    }
+
+    if (res == "Jump") {
+      let rawdata = fs.readFileSync(alias.param);
+      map = JSON.parse(rawdata);
+      player.pos = { x: 0, y: 0 };
+      runScene(player.pos);
+      return;
     }
 
     mov.applyDirection(map, player, res);

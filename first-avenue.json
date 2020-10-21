@@ -8,7 +8,7 @@
   "showEnergy":false,
   "tiles": [
     {
-      "cardinal": "S",
+      "cardinal": "",
       "title": "First Avenue",
       "text": "You just paid the lunch at the Double Dragon. The cashier thanks you while cleaning a golden lucky cat. You are now off the restaurant. A stream of yellow cabs passes by.",
       "commands": ["Take a taxi", "Quit"],
@@ -17,7 +17,7 @@
       "tasks": []
     },
     {
-      "cardinal": "N",
+      "cardinal": "",
       "title": "On a taxi in First Avenue",
       "text": "-Take me to the end of First Avenue. You just say\n-Yes sir.\nIn the middle of a traffic jam.. the stream goes slowly.\nA kebak kiosk on the right. A man is preparing a frankfurt. A couple of rolls on the barbecue, then he adds some mustard. The customer lends him some greens and takes away the frank.",
       "commands": ["Next", "Inventory", "Look", "Quit"],
@@ -26,7 +26,7 @@
       "tasks": []
     },
     {
-      "cardinal": "N",
+      "cardinal": "",
       "title": "A couple blocks ahead..",
       "text": "Look at that barber shop. Full of customers, some are sitting inside, others are standing outside. A cleaner is working on the window of an hardware store.",
       "commands": ["Next", "Inventory", "Look", "Quit"],
@@ -35,7 +35,7 @@
       "tasks": []
     },
     {
-      "cardinal": "N",
+      "cardinal": "",
       "title": "1st Ave / E 25st",
       "text": "In the middle of two large brick buildings. Red lights, the car stops gently while the driver's phone is ringing. A middle-east melody plays in the car. Why he doesn't take the phone?",
       "commands": ["Next", "Inventory", "Look", "Quit"],
@@ -44,7 +44,7 @@
       "tasks": []
     },
     {
-      "cardinal": "N",
+      "cardinal": "",
       "title": "1st Ave / E 25st",
       "text": "The phone is still ringing. The driver doesn't even look at the phone.",
       "commands": ["Next", "Inventory", "Look", "Quit"],
@@ -59,7 +59,7 @@
       "tasks": []
     },
     {
-      "cardinal": "N",
+      "cardinal": "",
       "title": "Mount Carmel Place",
       "text": "Golden leaves are falling, after a sudden gut. A clochard pushing his cart full of clothes and empty bottles.",
       "commands": ["Next", "Inventory", "Look", "Quit"],
@@ -74,7 +74,7 @@
     }
     ,
     {
-      "cardinal": "N",
+      "cardinal": "",
       "title": "1st Ave, E 37st",
       "text": "After a couple blocks, now the taxy stops behind an UPS van. A guy gets out of the van with a package. The policeman at the crossroad whistles at him a couple times. A fire engine is coming from 37st.",
       "commands": ["Next", "Inventory", "Look", "Quit"],
@@ -84,7 +84,7 @@
     }
     ,
     {
-      "cardinal": "N",
+      "cardinal": "",
       "title": "United Nations Plaza",
       "text": "A swift lane change to avoid the 1st ave tunnel, and you come at UN Plaza. Such an imposing building. Clouds reflections on the glass. You remember that awesome day when you visited the UN building.\nThe 39-story Secretariat Building was completed in 1950. On October 29, 2012, the basement of the UN complex was flooded due to Hurricane Sandy, leading to a three-day closure and the relocation of several offices.",
       "commands": ["Next", "Inventory", "Look", "Quit"],

@@ -10,6 +10,7 @@ const applyDirection = (map, player, direction) => {
   
   switch (direction) {
     case "North":
+    case "Back":
       testTile = getTile(map, player.pos.x, player.pos.y - 1);
       break;
     case "East":

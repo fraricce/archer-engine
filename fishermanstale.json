@@ -1,0 +1,50 @@
+{
+  "title": "A Fisherman's Tale",
+  "author": "Francesco Ricceri",
+  "cols": 1,
+  "rows": 3,
+  "tsize": 3,
+  "showPoints":true,
+  "showEnergy":false,
+  "customCommands" : [
+    { "alias":"What's inside?" , "mapTo" : "Look", "param":""} 
+  ],
+  "tiles": [
+    {
+      "cardinal": "",
+      "title": "Port of Roscoff, France",
+      "text": "Such a crispy night. The sea is calm, and a cold breeze caresses your skin. The Vauban is waiting for you, captain.",
+      "commands": ["Go onboard the Vauban", "Inventory", "Quit"],
+      "creatures": [],
+      "items": [],
+      "tasks": []
+    },
+    {
+      "cardinal": "",
+      "title": "Aboard the Vauban",
+      "text": "-Where are the keys..\nGot it. Inside the cabin, everythings is covered by darkness. The moon is hidden by dark clouds.",
+      "commands": ["Go ahead", "Inventory", "Quit"],
+      "creatures": [],
+      "items": [],
+      "tasks": []
+    },
+    {
+      "cardinal": "",
+      "title": "Aboard the Vauban",
+      "text": "A seagull has just landed af the bow, looking for small fishes and offal.",
+      "commands": ["What's inside?", "Inventory", "Quit"],
+      "creatures": [],
+      "items": [        {
+        "name": "Radio",
+        "strength": 5,
+        "skill": "",
+        "category": "device",
+        "canPick":false,
+        "canUse":true,
+        "point":5,
+        "messageAfterUse":"You switched on the radio on the weather channel:\n..today's forecast is covered with heavy rain, sea calm."
+      }],
+      "tasks": []
+    }
+  ]
+}
