@@ -19,6 +19,7 @@ const mainEmitter = new MainEmitter();
 let showItems = false;
 let showInventory = false;
 let showDevice = false;
+let showInfo = false;
 let enableDebug = false;
 const textWidth = 75;
 
@@ -26,9 +27,21 @@ function main(player) {
   enableDebug = process.argv.findIndex((i) => i === "-debug") >= 0;
   let rawdata = fs.readFileSync("fishermanstale.json");
   map = JSON.parse(rawdata);
+  map.tiles.forEach(t => {
+    t.commands.push("Inventory");
+    t.commands.push("About");
+    t.commands.push("Quit");
+
+  });
   mainEmitter.on("acquireInput", (room, player) => {
     getInput(room, player);
   });
+  term.on( 'key' , function( name , matches , data ) {
+    if ( name === 'ESCAPE' && showInfo) { 
+      showInfo = false;
+      runScene(player.pos);
+    }
+  } ) ;
   runScene(player.pos);
 }
 
@@ -130,8 +143,16 @@ const drawHeader = (title, showPoints, showEnergy, points, energy) => {
 };
 
 function runScene(pos, usedItem = undefined) {
+
   if (!enableDebug) term.clear();
   if (enableDebug) term.red(pos.x + " " + pos.y);
+
+  if (showInfo) {
+    term.wrapColumn({ x: 4, width: textWidth });
+    term.wrap.yellow("\n" + map.title + "\n\nby " + map.author + "\n\n" + map.info + "\n\n");
+    term.cyan("(ESC to exit)");
+    return;
+  }
 
   drawHeader(
     map.title,
@@ -140,13 +161,16 @@ function runScene(pos, usedItem = undefined) {
     player.points,
     player.energy
   );
+
   checkTask(player);
 
   let room = mov.getTile(map, pos.x, pos.y);
 
-  term.wrapColumn({ x: 2, width: textWidth });
-  term.wrap.brightBlue("\n\n" + room.title + "\n");
-  term.wrap.brightBlue("\n" + room.text);
+  if (!showInfo) {
+    term.wrapColumn({ x: 2, width: textWidth });
+    term.wrap.brightBlue("\n\n" + room.title + "\n");
+    term.wrap.brightBlue("\n" + room.text);
+  }
 
   term("\n\n " + player.feedback + "\n");
   player.feedback = "";
@@ -166,7 +190,6 @@ function runScene(pos, usedItem = undefined) {
     term.wrapColumn({ x: 4, width: textWidth });
     term.wrap.yellow("\nUsing " + usedItem.name + "\n");
     term.wrap.yellow(usedItem.messageAfterUse + "\n");
-    player
     showDevice = false;
   }
 
@@ -238,6 +261,7 @@ function runScene(pos, usedItem = undefined) {
 }
 
 const getInput = (room, player) => {
+
   term.singleColumnMenu(room.commands, function (error, response) {
     let res = response.selectedText;
 
@@ -282,6 +306,13 @@ const getInput = (room, player) => {
     if (res === "Inventory") {
       showInventory = true;
       player.feedback = "Inventory";
+      runScene(player.pos);
+      return;
+    }
+
+    if (res === "About") {
+      showInfo = true;
+      player.feedback = "Info about this story";
       runScene(player.pos);
       return;
     }

@@ -31,7 +31,11 @@ const applyDirection = (map, player, direction) => {
   if (!testTile) {
     player.feedback = "Cannot go that way";
   } else {
-    player.feedback = "Go " + direction;
+
+    if (direction === "North" || direction === "South" || direction === "East" || direction === "West") {
+      player.feedback = "Go " + direction;
+    }
+    
     switch (direction) {
       case "North":
         player.pos.y = player.pos.y - 1;

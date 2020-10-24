@@ -1,20 +1,19 @@
 {
   "title": "A Fisherman's Tale",
   "author": "Francesco Ricceri",
+  "info":"Fisherman's Tale is a story based in Brittany, Northern France.\nOne night in October, Claude, captain of the Vauban, goes fishing with his boat, despite bad weather forecast.\nThe rest of the story waits you to be unveiled..",
   "cols": 1,
   "rows": 3,
   "tsize": 3,
   "showPoints":true,
   "showEnergy":false,
-  "customCommands" : [
-    { "alias":"What's inside?" , "mapTo" : "Look", "param":""} 
-  ],
+  "customCommands" : [],
   "tiles": [
     {
       "cardinal": "",
       "title": "Port of Roscoff, France",
       "text": "Such a crispy night. The sea is calm, and a cold breeze caresses your skin. The Vauban is waiting for you, captain.",
-      "commands": ["Go onboard the Vauban", "Inventory", "Quit"],
+      "commands": ["Go onboard the Vauban"],
       "creatures": [],
       "items": [],
       "tasks": []
@@ -23,7 +22,7 @@
       "cardinal": "",
       "title": "Aboard the Vauban",
       "text": "-Where are the keys..\nGot it. Inside the cabin, everythings is covered by darkness. The moon is hidden by dark clouds.",
-      "commands": ["Go ahead", "Inventory", "Quit"],
+      "commands": ["Go ahead"],
       "creatures": [],
       "items": [],
       "tasks": []
@@ -32,7 +31,7 @@
       "cardinal": "",
       "title": "Aboard the Vauban",
       "text": "A seagull has just landed af the bow, looking for small fishes and offal.",
-      "commands": ["What's inside?", "Inventory", "Quit"],
+      "commands": ["Look"],
       "creatures": [],
       "items": [        {
         "name": "Radio",
