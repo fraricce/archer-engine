@@ -7,9 +7,10 @@
   "tsize": 3,
   "showPoints":true,
   "showEnergy":false,
-  "customCommands" : [],
+  "customCommands" : ["Switch on the boat engine"],
   "tiles": [
     {
+      "index":0,
       "cardinal": "",
       "title": "Port of Roscoff, France",
       "text": "Such a crispy night. The sea is calm, and a cold breeze caresses your skin. The Vauban is waiting for you, captain.",
@@ -19,6 +20,7 @@
       "tasks": []
     },
     {
+      "index":1,
       "cardinal": "",
       "title": "Aboard the Vauban",
       "text": "-Where are the keys..\nGot it. Inside the cabin, everythings is covered by darkness. The moon is hidden by dark clouds.",
@@ -28,12 +30,13 @@
       "tasks": []
     },
     {
+      "index":2,
       "cardinal": "",
       "title": "Aboard the Vauban",
       "text": "A seagull has just landed af the bow, looking for small fishes and offal.",
-      "commands": ["Look"],
+      "commands": [{"text": "Start the engine", "showIfIsTrue": "RADIO_IS_ON" }],
       "creatures": [],
-      "items": [        {
+      "items": [{
         "name": "Radio",
         "strength": 5,
         "skill": "",
@@ -41,7 +44,8 @@
         "canPick":false,
         "canUse":true,
         "point":5,
-        "messageAfterUse":"You switched on the radio on the weather channel:\n..today's forecast is covered with heavy rain, sea calm."
+        "messageAfterUse":"You switched on the radio on the weather channel:\n..today's forecast is covered with heavy rain, sea calm.",
+        "actionFlag":"RADIO_IS_ON"
       }],
       "tasks": []
     }

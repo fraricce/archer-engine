@@ -21,6 +21,7 @@ let showInventory = false;
 let showDevice = false;
 let showInfo = false;
 let enableDebug = false;
+let actionFlags = {};
 const textWidth = 75;
 
 function main(player) {
@@ -28,10 +29,10 @@ function main(player) {
   let rawdata = fs.readFileSync("fishermanstale.json");
   map = JSON.parse(rawdata);
   map.tiles.forEach(t => {
+    t.commands.push("Look");
     t.commands.push("Inventory");
     t.commands.push("About");
     t.commands.push("Quit");
-
   });
   mainEmitter.on("acquireInput", (room, player) => {
     getInput(room, player);
@@ -188,7 +189,7 @@ function runScene(pos, usedItem = undefined) {
 
   if (showDevice && usedItem) {
     term.wrapColumn({ x: 4, width: textWidth });
-    term.wrap.yellow("\nUsing " + usedItem.name + "\n");
+    term.wrap.white("\n[Using " + usedItem.name + "]\n");
     term.wrap.yellow(usedItem.messageAfterUse + "\n");
     showDevice = false;
   }
@@ -213,7 +214,7 @@ function runScene(pos, usedItem = undefined) {
     if (room.items.length > 0) {
       term.wrapColumn({ x: 4, width: textWidth });
       term.wrap.yellow("\nThere is something here:" + "\n");
-      let quitIdx = room.commands.findIndex((y) => y === "Quit");
+      let quitIdx = room.commands.findIndex((y) => y === "About");
       room.items.forEach((k) => {
         let verb = "";
 
@@ -262,7 +263,17 @@ function runScene(pos, usedItem = undefined) {
 
 const getInput = (room, player) => {
 
-  term.singleColumnMenu(room.commands, function (error, response) {
+  const plainCommands = room.commands.map(m => { 
+    const menuText = m["text"] ? m["text"] : m;
+    const show = false;
+    if (m["showIfIsTrue"] === undefined) {
+      return menuText;
+    }
+    return actionFlags[m["showIfIsTrue"]] ?
+      menuText : "?"; 
+  });
+
+  term.singleColumnMenu(plainCommands, function (error, response) {
     let res = response.selectedText;
 
     // look into aliases
@@ -288,6 +299,7 @@ const getInput = (room, player) => {
       const usedItem = room.items.find((j) => j.name === item);
       if (!usedItem) return;
       player.points += usedItem.point
+      actionFlags[usedItem.actionFlag] = true;
       runScene(player.pos, usedItem);
       return;
     }
@@ -313,6 +325,12 @@ const getInput = (room, player) => {
     if (res === "About") {
       showInfo = true;
       player.feedback = "Info about this story";
+      runScene(player.pos);
+      return;
+    }
+
+    if (res === "?") {
+      player.feedback = "Locked menu! Try something..";
       runScene(player.pos);
       return;
     }
