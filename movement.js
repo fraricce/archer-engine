@@ -1,13 +1,13 @@
 const getTile = (map, col, row) => {
   if (col < 0 || row < 0) return undefined;
-  if (col >= map.cols || row >= map.rows) return undefined;
+  // be careful here: before was row >= map.rows
+  if (col >= map.cols || row > map.rows) return undefined;
   return map.tiles[row * map.cols + col];
-}
+};
 
-const applyDirection = (map, player, direction) => {
- 
+const applyDirection = (map, player, direction, jump) => {
   let testTile = undefined;
-  
+
   switch (direction) {
     case "North":
     case "Back":
@@ -23,6 +23,9 @@ const applyDirection = (map, player, direction) => {
     case "West":
       testTile = getTile(map, player.pos.x - 1, player.pos.y);
       break;
+    case "Goto":
+      testTile = getTile(map, player.pos.x, jump);
+      break;
     default:
       testTile = getTile(map, player.pos.x, player.pos.y + 1);
       break;
@@ -31,11 +34,15 @@ const applyDirection = (map, player, direction) => {
   if (!testTile) {
     player.feedback = "Cannot go that way";
   } else {
-
-    if (direction === "North" || direction === "South" || direction === "East" || direction === "West") {
+    if (
+      direction === "North" ||
+      direction === "South" ||
+      direction === "East" ||
+      direction === "West"
+    ) {
       player.feedback = "Go " + direction;
     }
-    
+
     switch (direction) {
       case "North":
         player.pos.y = player.pos.y - 1;
@@ -50,11 +57,14 @@ const applyDirection = (map, player, direction) => {
       case "West":
         player.pos.x = player.pos.x - 1;
         break;
+      case "GoTo":
+        player.pos.y = jump;
+        break;
       default:
         player.pos.y = player.pos.y + 1;
         break;
-    } 
+    }
   }
 };
 
-module.exports = { applyDirection, getTile }
+module.exports = { applyDirection, getTile };

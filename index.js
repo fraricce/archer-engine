@@ -275,11 +275,14 @@ const getInput = (room, player) => {
 
   term.singleColumnMenu(plainCommands, function (error, response) {
     let res = response.selectedText;
+    let commandParam;
 
     // look into aliases
     var alias = map.customCommands?.find((k) => k.alias === res);
+
     if (alias) {
       res = alias.mapTo;
+      commandParam = alias.param;
     }
 
     if (res.indexOf("Pick") >= 0) {
@@ -348,6 +351,12 @@ const getInput = (room, player) => {
       let rawdata = fs.readFileSync(alias.param);
       map = JSON.parse(rawdata);
       player.pos = { x: 0, y: 0 };
+      runScene(player.pos);
+      return;
+    }
+
+    if (res == "GoTo") {
+      player.pos.y = commandParam;
       runScene(player.pos);
       return;
     }

@@ -3,11 +3,12 @@
   "author": "Francesco Ricceri",
   "info":"Fisherman's Tale is a story based in Brittany, Northern France.\nOne night in October, Claude, captain of the Vauban, goes fishing with his boat, despite bad weather forecast.\nThe rest of the story waits you to be unveiled..",
   "cols": 1,
-  "rows": 3,
+  "rows": 4,
   "tsize": 3,
   "showPoints":true,
   "showEnergy":false,
-  "customCommands" : ["Switch on the boat engine"],
+  "customCommands" : [{ "alias":"Start the engine" , "mapTo" : "GoTo", "param":3},
+    { "alias":"Leave the Vauban" , "mapTo" : "GoTo", "param":4} ],
   "tiles": [
     {
       "index":0,
@@ -34,7 +35,9 @@
       "cardinal": "",
       "title": "Aboard the Vauban",
       "text": "A seagull has just landed af the bow, looking for small fishes and offal.",
-      "commands": [{"text": "Start the engine", "showIfIsTrue": "RADIO_IS_ON" }],
+      "commands": [
+        {"text": "Start the engine", "showIfIsTrue": "RADIO_IS_ON" },
+        {"text": "Leave the Vauban" }],
       "creatures": [],
       "items": [{
         "name": "Radio",
@@ -47,6 +50,26 @@
         "messageAfterUse":"You switched on the radio on the weather channel:\n..today's forecast is covered with heavy rain, sea calm.",
         "actionFlag":"RADIO_IS_ON"
       }],
+      "tasks": []
+    },
+    {
+      "index":3,
+      "cardinal": "",
+      "title": "Aboard the Vauban",
+      "text": "The sound of the engine slowly increase. You did it!",
+      "commands": ["Go ahead"],
+      "creatures": [],
+      "items": [],
+      "tasks": []
+    },
+    {
+      "index":4,
+      "cardinal": "",
+      "title": "At the pier 7",
+      "text": "You stepped out of the Vauban. You are now standing in the pier 7.",
+      "commands": [],
+      "creatures": [],
+      "items": [],
       "tasks": []
     }
   ]
