@@ -22,7 +22,7 @@
         "name": "Whiskey",
         "strength": 5,
         "skill": "",
-        "category": "food",
+        "category": "drink",
         "canPick":false,
         "canUse":true,
         "point":5,

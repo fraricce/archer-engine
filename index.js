@@ -106,6 +106,25 @@ const updatePlayerAfterEat = (player, pickedItem) => {
   }
 };
 
+const updatePlayerAfterDrink = (player, pickedItem) => {
+  player.feedback =
+    "You drank " + pickedItem.name;
+
+  if (player.energy < 100 && pickedItem.energy > 0) {
+    const tryVal = 100 - (player.energy + pickedItem.energy);
+    player.energy += tryVal;
+    player.feedback = "Such a refreshing drink. You feel recharged.";
+  }
+
+  if (pickedItem.energy < 0) {
+    player.energy -= pickedItem.energy;
+    if (Math.abs(pickedItem.energy) > 10) {
+      player.feedback =
+        "Drink was poisoned. Your head is heavy, and you feel dizzy.";
+    }
+  }
+};
+
 const toLower = (word) => {
   return word[0].toLowerCase() + word.substr(1);
 };
@@ -239,19 +258,7 @@ function runScene(pos, usedItem = undefined) {
       term.wrap.yellow("\nThere is something here:" + "\n");
       let quitIdx = room.commands.findIndex((y) => y === "About");
       room.items.forEach((k) => {
-        let verb = "";
-
-        if (k.category === "food") {
-          verb = "Eat";
-        }
-
-        if (k.canPick) {
-          verb = "Pick";
-        }
-
-        if (k.canUse) {
-          verb = "Use";
-        }
+        let verb = getVerb(k);
 
         let newItem = verb + " " + k.name;
 
@@ -282,6 +289,25 @@ function runScene(pos, usedItem = undefined) {
   }
 
   mainEmitter.emit("acquireInput", room, player);
+}
+
+const getVerb = (k) => {
+  if (k.category === "food") {
+    return "Eat";
+  }
+
+  if (k.category === "drink") {
+    return "Drink";
+  }
+
+  if (k.canPick) {
+    return "Pick";
+  }
+
+  if (k.canUse) {
+    return "Use";
+  }
+
 }
 
 const getInput = (room, player) => {
@@ -332,6 +358,10 @@ const getInput = (room, player) => {
 
     if (res.indexOf("Eat") >= 0) {
       updatePlayerAfterEat(player, updateRoomObjects(res, "Eat", room));
+    }
+
+    if (res.indexOf("Drink") >= 0) {
+      updatePlayerAfterDrink(player, updateRoomObjects(res, "Drink", room));
     }
 
     if (res === "Look") {
@@ -385,7 +415,6 @@ const getInput = (room, player) => {
     }
 
     mov.applyDirection(map, player, res);
-
     runScene(player.pos);
   });
 };
