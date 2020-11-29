@@ -16,6 +16,10 @@ const EventEmitter = require("events");
 class MainEmitter extends EventEmitter {}
 const mainEmitter = new MainEmitter();
 
+var map = {};
+var player = new Player("Fra", { x: 0, y: 0 });
+player.feedback = "Your command:";
+
 let showItems = false;
 let showInventory = false;
 let showDevice = false;
@@ -26,30 +30,49 @@ const textWidth = 75;
 
 function main(player) {
   enableDebug = process.argv.findIndex((i) => i === "-debug") >= 0;
-  let rawdata = fs.readFileSync("fishermanstale.json");
-  map = JSON.parse(rawdata);
+
+  let story = process.argv.map((i) => { 
+    const idx = i.indexOf("-story="); 
+    if ( idx >= 0) {
+      return i.substring(idx+7);
+    } else {
+      return null;
+    }
+  }).filter((s) => s != null);
+
+  if (story.length === 0 || !story) {
+    story.push('demo');
+  }
+
+  try {
+    let rawdata = fs.readFileSync(`${story[0]}.json`);
+    map = JSON.parse(rawdata);
+  }
+  catch (err) {
+    term.cyan.red("\nOops..! Archer Engine: could not load story.\n");
+    process.exit();
+  }
+  
   map.tiles.forEach(t => {
     t.commands.push("Look");
     t.commands.push("Inventory");
     t.commands.push("About");
     t.commands.push("Quit");
   });
+  
   mainEmitter.on("acquireInput", (room, player) => {
     getInput(room, player);
   });
+  
   term.on( 'key' , function( name , matches , data ) {
     if ( name === 'ESCAPE' && showInfo) { 
       showInfo = false;
       runScene(player.pos);
     }
   } ) ;
+  
   runScene(player.pos);
 }
-
-var map = {};
-
-var player = new Player("Fra", { x: 0, y: 0 });
-player.feedback = "Your command:";
 
 const updateRoomObjects = (res, command, room, player) => {
   const item = res.substr(command.length).trim();

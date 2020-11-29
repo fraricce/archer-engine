@@ -1,0 +1,55 @@
+{
+  "title": "Demo Story",
+  "author": "Francesco Ricceri",
+  "info":"Welcome to the demo story.",
+  "cols": 1,
+  "rows": 4,
+  "tsize": 3,
+  "showPoints":true,
+  "showEnergy":false,
+  "customCommands" : [
+    { "alias":"Go to bed" , "mapTo" : "GoTo", "param":1},
+    { "alias":"Go outside" , "mapTo" : "GoTo", "param":2}],
+  "tiles": [
+    {
+      "index":0,
+      "cardinal": "",
+      "title": "A cabin in the wilderness",
+      "text": "Such a crispy night. The sky is full of twinkling start, and a cold breeze caresses your skin. A fire in the chimney, makes the small cabin warm. The cabin is a small room, with a box on the right.",
+      "commands": ["Go to bed", "Go outside"],
+      "creatures": [],
+      "items": [{
+        "name": "Whiskey",
+        "strength": 5,
+        "skill": "",
+        "category": "food",
+        "canPick":false,
+        "canUse":true,
+        "point":5,
+        "messageAfterUse":"Yeek.. Yeek.. the whiskey is so strong and warms your body.",
+        "actionFlag":""
+      }],
+      "tasks": []
+    },
+    {
+      "index":1,
+      "cardinal": "",
+      "title": "In a cabin bed",
+      "text": "Wow, such a warm place. The mattress's not very comfortable, but I'm happy with it.'",
+      "commands": [""],
+      "creatures": [],
+      "items": [],
+      "tasks": []
+    },
+    {
+      "index":2,
+      "cardinal": "",
+      "title": "The forest",
+      "text": "You're in the wilderness. Just the soft sound of your feet in the white snow.",
+      "commands": [],
+      "creatures": [],
+      "items": [],
+      "tasks": []
+    }
+  ]
+}
